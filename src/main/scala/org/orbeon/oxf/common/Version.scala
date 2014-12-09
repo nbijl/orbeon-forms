@@ -37,9 +37,9 @@ object Version {
 
     private val PossibleEditions = Set("CE", "PE")
 
-    val VersionNumber = "@RELEASE@"
-    val Edition       = Option("@EDITION@") filter PossibleEditions getOrElse "CE"
-    val VersionString = "Orbeon Forms " + VersionNumber + ' ' + Edition
+    val VersionNumber = "4.7.0.pre.201412091549"
+    val Edition       = Option("CE") filter PossibleEditions getOrElse "CE"
+    val VersionString = "Orbeon Forms with WORTH modifications " + VersionNumber + ' ' + Edition
 
     def versionStringIfAllowed =
         Properties.instance.getPropertySet.getBoolean("oxf.show-version", default = false) option VersionString

@@ -101,6 +101,10 @@
             <param-name>oxf.http.proxy.ntlm.domain</param-name>
             <param-value/>
         </init-param>
+        <init-param>
+            <name>forward-parameters</name>
+            <value>applicationTitle userid groupid workflowid workflowtaskid workflowforminstanceid token returnurl serverhostname roleid orbeon-embeddable documentid document-id document application applicationid application-id</value>
+        </init-param>
         
         <supports>
             <mime-type>text/html</mime-type>

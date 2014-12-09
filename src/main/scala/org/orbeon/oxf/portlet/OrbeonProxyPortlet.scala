@@ -13,14 +13,22 @@
  */
 package org.orbeon.oxf.portlet
 
+import java.net.URLEncoder
 import javax.portlet._
 
+import com.liferay.portal.kernel.util.WebKeys
+import com.liferay.portal.kernel.workflow.{WorkflowInstance, WorkflowInstanceManagerUtil, WorkflowTask, WorkflowTaskManagerUtil}
+import com.liferay.portal.model.Layout
+import com.liferay.portal.theme.ThemeDisplay
 import com.liferay.portal.util.PortalUtil
+import com.worthit.tsb.model.{Application, Competition, WorkflowFormDefinition, WorkflowFormInstance}
+import com.worthit.tsb.service.{ApplicationLocalServiceUtil, CompetitionLocalServiceUtil, NavigationSupportLocalServiceUtil, RoleMapperLocalServiceUtil, WorkflowFormDefinitionLocalServiceUtil, WorkflowFormInstanceLocalServiceUtil, WorkflowStatusMapperLocalServiceUtil}
+import com.worthit.tsb.workflow.WorkflowUtils
 import org.orbeon.errorified.Exceptions
 import org.orbeon.exception.OrbeonFormatter
 import org.orbeon.oxf.externalcontext.WSRPURLRewriter
 import org.orbeon.oxf.fr.embedding._
-import org.orbeon.oxf.http.{StreamedContent, HttpClient, ApacheHttpClient, HttpClientSettings}
+import org.orbeon.oxf.http.{ApacheHttpClient, HttpClient, HttpClientSettings, StreamedContent}
 import org.orbeon.oxf.portlet.liferay.LiferaySupport
 import org.orbeon.oxf.util.ScalaUtils.{withRootException ⇒ _, _}
 
@@ -162,6 +170,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
     private def createRequestDetails(settings: PortletSettings, request: PortletRequest, namespace: String): RequestDetails = {
         // Determine URL based on preferences and request
         val path = {
+            initWorthRequest(request)
 
             def pathParameterOpt =
                 Option(request.getParameter(WSRPURLRewriter.PathParameterName))
@@ -170,16 +179,9 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                 if (getPreference(request, Page) == "home")
                     APISupport.formRunnerHomePath(None)
                 else
-                    APISupport.formRunnerPath(
-                        getPreferenceOrRequested(request, AppName),
-                        getPreferenceOrRequested(request, FormName),
-                        getPreferenceOrRequested(request, Page),
-                        Option(getPreferenceOrRequested(request, DocumentId)),
-                        None
-                    )
+                    getWorthFormRunnerPath(request)
 
-            def filterMode(mode: String) =
-                if (getBooleanPreference(request, ReadOnly) && mode == Edit.name) View.name else mode
+            def filterMode(mode: String) = getWorthViewMode(request)
 
             pathParameterOpt getOrElse defaultPath match {
                 case path @ "/xforms-server-submit" ⇒
@@ -189,7 +191,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                     APISupport.formRunnerPath(appName, formName, filterMode(mode), None, Option(query))
                 // Incoming path is Form Runner path with document id
                 case FormRunnerDocumentPath(appName, formName, mode, documentId, _, query) ⇒
-                    APISupport.formRunnerPath(appName, formName, filterMode(mode), Some(documentId), Option(query))
+                    APISupport.formRunnerPath(appName, formName, mode, Some(documentId), Option(query))
                 // Incoming path is Form Runner Home page
                 case FormRunnerHome(_, query) ⇒
                     APISupport.formRunnerHomePath(Option(query))
@@ -275,6 +277,222 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             case _ ⇒
                 None
         }
+
+
+    private def getWorthViewMode(request: PortletRequest) : String = {
+
+        if (!worthRequest.wfTask.isDefined) {
+            return View.name
+        }
+
+        var simulfyBrowserSupported = false
+
+        // show edit view when (user is owner or collaborator) AND (simulfyIsDisabled or thisBrowserIsSupported)
+        // OR it's a subform task on the main workflow owned by the current user
+        val simulfyEnabled = WorkflowUtils.isSimulfyEnabledForThisRequest(worthRequest.request)
+        if ((worthRequest.userId.equals(worthRequest.assigneeId) && !simulfyEnabled) || (simulfyEnabled && WorkflowUtils.isBrowserSupportedForSimulfy(request))) {
+            // TODO: move this logic to the service layer and reuse in SubmitApplication
+
+            if (!worthRequest.wfFormDefinition.isDefined) {
+                APISupport.Logger.debug("No workflow form definition")
+            } else {
+                APISupport.Logger.debug("Workflow form definition " + worthRequest.wfFormDefinition.get.getName());
+            }
+            if (!worthRequest.wfFormInstance.isDefined) {
+                APISupport.Logger.debug("No workflow form definition")
+            } else {
+                APISupport.Logger.debug("Workflow form instance " + worthRequest.wfFormInstance.get.getName());
+            }
+            // show main form in view mode when when it wasn't specifically requested
+            if ((worthRequest.isCurrentlyOverriddenBySubflow && worthRequest.wfFormInstance == null) ||
+                    (worthRequest.wfFormInstance.isDefined && !worthRequest.wfFormDefinition.isDefined && worthRequest.wfFormInstance.get.isOverrideMainFlow()) ||
+                    (worthRequest.wfFormInstance.isDefined && worthRequest.wfFormDefinition.isDefined && !worthRequest.wfFormInstance.get.getName().equals(worthRequest.wfFormDefinition.get.getName()))
+            ) {
+                View.name
+            } else {
+                Edit.name
+            }
+        } else {
+            View.name
+        }
+
+    }
+
+    private def getWorthApplicationParams(request: PortletRequest): String = {
+        // Fields to return :
+        // roleId, workflowTaskId, serverHostname, applicationTitle, userId, groupId,
+        // workflowId, workflowTaskId, workflowFormInstanceId, token, returnUrl
+
+        var scopeGroupId = PortalUtil.getScopeGroupId(request).toString
+        APISupport.Logger.info("scopeGroupId " + scopeGroupId)
+        var userId : Option[String] = Option(PortalUtil.getUserId(request).toString)
+        var groupId : Option[String] = Option(scopeGroupId)
+
+
+        var applicationParams = "a=a"+
+                (userId map ("&userid=" + _) getOrElse "") +
+                (groupId map ("&groupid=" + _) getOrElse "") +
+                ("&document=" + worthRequest.application.getApplicationId) +
+                (worthRequest.wfId map ("&workflowid=" + _) getOrElse "") +
+                (worthRequest.wfTask map ("&workflowtaskid=" + _.getWorkflowTaskId.toString) getOrElse "") +
+                (worthRequest.wfFormInstance map ("&workflowforminstanceid=" + _.getWorkflowFormInstanceId.toString) getOrElse "") +
+                (worthRequest.token map ("&token=" + _) getOrElse "") +
+                (worthRequest.returnUrl map ("&returnurl=" + _) getOrElse "") +
+                (worthRequest.serverHostname map ("&serverhostname=" + _) getOrElse "") +
+                (worthRequest.roleIds map ("&roleid=" + _) getOrElse "")
+
+        APISupport.Logger.info(" got applicationParams   " + applicationParams)
+        applicationParams
+    }
+
+    private def getWorthApplicationDocumentId(request: PortletRequest) : String = {
+        var scopeGroupId = PortalUtil.getScopeGroupId(request)
+        var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId).get(0)
+        APISupport.Logger.info("application id  " + application.getApplicationId.toString)
+        //Option(application.getApplicationId.toString)
+        val appId = application.getApplicationId.toString
+        appId
+    }
+    private def getWorthFormRunnerPath(request: PortletRequest) = {
+        APISupport.Logger.info("DocumentId " + getWorthApplicationDocumentId(request))
+        APISupport.Logger.info("DocumentId " + getPreferenceOrRequested(request, DocumentId))
+        APISupport.Logger.info("page  " + getPreferenceOrRequested(request, Page).toString)
+
+        // BEFORE: Option(getPreferenceOrRequested(request, DocumentId))
+        var appName = getPreferenceOrRequested(request, AppName)
+        var formName = getPreferenceOrRequested(request, FormName)
+
+        // if the proxy portlet has no appName and formName, then use the competition appName/formName
+        if (appName == ""){
+            appName = worthRequest.competition.get.getOrbeonAppName
+        }
+
+        if(formName == ""){
+            formName = worthRequest.competition.get.getOrbeonFormName
+        }
+
+
+        val url = APISupport.formRunnerPath(
+            appName,
+            formName,
+            getWorthViewMode(request),
+            Option(getWorthApplicationDocumentId(request)),
+            Option(getWorthApplicationParams(request))
+        )
+        APISupport.Logger.info("url  " + url)
+        url
+    }
+    private case class WorthRequest(
+                                           wfId : Option[String] = None,
+                                           wfInstance: WorkflowInstance, // lowercase name → original name
+                                           wfTask : Option[WorkflowTask],
+                                           application: Application,
+                                           request: PortletRequest,
+                                           userId : String,
+                                           assigneeId : String,
+                                           competition: Option[Competition],
+                                           wfFormDefinition : Option[WorkflowFormDefinition],
+                                           wfFormInstance : Option[WorkflowFormInstance],
+                                           isCurrentlyOverriddenBySubflow : Boolean,
+                                           token : Option[String],
+                                           returnUrl : Option[String],
+                                           roleIds : Option[String],
+                                           serverHostname: Option[String]
+
+                                           )
+    private var worthRequest : WorthRequest = null
+
+
+    def initWorthRequest(request: PortletRequest) = {
+        //        var worthRequest :WorthRequest
+        var className = classOf[Application].getName
+        var primKey: Long = 0
+        var assigneeId = "0"
+        var roleIds : Option[String] = Some("applicant")
+        var competition : Option[Competition] = None
+        var wfFormInstance : Option[WorkflowFormInstance] = None
+        var wfFormDefinition: Option[WorkflowFormDefinition] = None
+        var userId = PortalUtil.getUserId(request).toString
+        var owningUserId : Option[Long] = None
+        var isCurrentlyOverriddenBySubflow: Boolean = false
+        var applicationTitle: String = null
+        var token:Option[String] = None
+        var returnUrl: Option[String] = None
+
+        var scopeGroupId = PortalUtil.getScopeGroupId(request)
+        var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId).get(0)
+
+        if (application != null){
+            competition = Option(CompetitionLocalServiceUtil.getCompetition(application.getCompetitionId))
+            owningUserId = if (application.getOwnerUserId > 0) Option(application.getOwnerUserId) else Option(application.getUserId)
+            primKey = application.getApplicationId
+            isCurrentlyOverriddenBySubflow = ApplicationLocalServiceUtil.isCurrentlyOverriddenBySubflow(primKey, application.getStatus());
+            try {
+                applicationTitle = URLEncoder.encode(application.getTitle, "UTF-8")
+            } catch {
+                case e : Throwable ⇒ APISupport.Logger.error(e.getMessage())
+            }
+        }
+
+        // check if maybe we need to display a subform
+        var themeDisplay:ThemeDisplay = request.getAttribute(WebKeys.THEME_DISPLAY).asInstanceOf[ThemeDisplay]
+        var layout:Layout = themeDisplay.getLayout
+        if (layout != null && application != null) {
+            val layoutName:String = layout.getName("GB")
+            if (layoutName != null && layoutName.trim().length() > 0) {
+                wfFormInstance = Option(WorkflowFormInstanceLocalServiceUtil.getByNameAndApplication(layoutName, application))
+            }
+        }
+
+
+        // yes, we found out that we are on a subform page
+        if (wfFormInstance.isDefined && !wfFormInstance.get.isOverrideMainFlow()) {
+            owningUserId = Option(wfFormInstance.get.getUserId)
+            className = classOf[WorkflowFormInstance].getName
+            primKey = wfFormInstance.get.getWorkflowFormInstanceId
+        }
+
+        var wfInstance = WorkflowInstanceManagerUtil.getWorkflowInstances(
+            PortalUtil.getCompanyId(request),
+            application.getUserId,
+            className,
+            primKey,
+            false,
+            0,
+            100,
+            null).get(0)
+        var wfTask  : WorkflowTask = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(
+            PortalUtil.getCompanyId(request),
+            0L,
+            wfInstance.getWorkflowInstanceId(),
+            false,
+            0,
+            10,
+            null).get(0)
+
+        assigneeId = wfTask.getAssigneeUserId().toString
+        APISupport.Logger.debug("roleId = applicant" + userId +" - "+ owningUserId.toString())
+        if(!userId.equals(owningUserId.toString())){
+            APISupport.Logger.debug("user is not the application owner, so get roleid external")
+            roleIds = Option(RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
+        }
+
+        var wfId = Option(WorkflowStatusMapperLocalServiceUtil.fromId(application.getStatus()).toString)
+        val wfFormInstanceId = if (!wfFormInstance.isDefined) 0 else wfFormInstance.get.getWorkflowFormInstanceId
+        token = Option(NavigationSupportLocalServiceUtil.getTokenizedWorkflowIdentifier(
+            application.getApplicationId, wfTask.getWorkflowTaskId, wfFormInstanceId))
+        if(application != null && competition.isDefined){
+            wfFormDefinition = Option(WorkflowFormDefinitionLocalServiceUtil.getFormDefinitionOverridingMainFlow(competition.get.getCompetitionId(), application.getStatus()))
+        }
+
+        var serverHostname: Option[String] = Some(request.getServerName() + ":" + request.getServerPort());
+        if (request.isSecure()) {
+            serverHostname = Some("https://" + serverHostname.get);
+        } else {
+            serverHostname = Some("http://" + serverHostname.get);
+        }
+        worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname)
+    }
 }
 
 object OrbeonProxyPortlet {

@@ -30,6 +30,8 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
+import java.util.Arrays;
+
 
 /**
  * Base class for all XHTML and XForms element handlers.
@@ -143,9 +145,10 @@ public abstract class XFormsBaseHandlerXHTML extends XFormsBaseHandler {
 
     protected StringBuilder getInitialClasses(String controlURI, String controlName, Attributes controlAttributes, XFormsControl control, boolean incrementalDefault) {
         
-        final StringBuilder sb = new StringBuilder(50);
+        final StringBuilder sb = new StringBuilder(101);
         // User-defined classes go first
         appendControlUserClasses(controlAttributes, control, sb);
+        appendSimulfyClasses(sb, control, controlURI, controlName);
 
         // Control classes based on the name for built-in controls
         if (XFormsControlFactory.isBuiltinControl(controlURI, controlName)) {
@@ -431,5 +434,55 @@ public abstract class XFormsBaseHandlerXHTML extends XFormsBaseHandler {
             else
                 xmlReceiver.characters(value.toCharArray(), 0, value.length());
         }
+    }
+
+
+
+
+    protected StringBuilder appendSimulfyClasses(StringBuilder sb, XFormsControl control, String controlURI, String controlName){
+
+        if (XFormsControlFactory.isBuiltinControl(controlURI, controlName)) {
+
+            if (!XFormsControlFactory.isContainerControl(controlURI, controlName)) {
+                //these elements do not need any simulfy work
+                String[] ignoreForSimulfy = {"output", "trigger", "grid", "process-button", "href-button", "switch"};
+                //filter on only normal text input classes, no decimals or dates
+                String[] textSimulfy = {"input", "textarea", "textcount"};
+                //these are also type input, but we do not want them simulfied
+                String[] excludeTypesSimulfy = {"date", "decimal", "currency", "grid"};
+
+                if (control instanceof XFormsSingleNodeControl) {
+
+                    if (!Arrays.asList(ignoreForSimulfy).contains(controlName)) {
+                        //mark all controls that need to be simulfy synced (all normal controls)
+                        if (sb.length() > 0)
+                            sb.append(' ');
+                        sb.append("simulfy-candidate");
+
+                        final XFormsSingleNodeControl singleNodeControl = (XFormsSingleNodeControl) control;
+                        String typeName = singleNodeControl.getBuiltinTypeName();
+                        if (typeName == null) {
+                            typeName = singleNodeControl.getTypeLocalName();
+                            if (typeName == null) {
+                                if (singleNodeControl.container() != null && singleNodeControl.container().associatedControl() != null && singleNodeControl.container().associatedControl().bindingContext() != null && singleNodeControl.container().associatedControl().bindingContext().controlElement() != null &&
+                                        singleNodeControl.container().associatedControl().bindingContext().controlElement().getQName() != null && singleNodeControl.container().associatedControl().bindingContext().controlElement().getQName().getName() != null) {
+                                    typeName = singleNodeControl.container().associatedControl().bindingContext().controlElement().getQName().getName();
+                                }
+                            }
+                        }
+
+                        //mark all controls that need real time collaboration
+                        if (Arrays.asList(textSimulfy).contains(controlName) && !(typeName != null && Arrays.asList(excludeTypesSimulfy).contains(typeName))) {
+                            if (sb.length() > 0)
+                                sb.append(' ');
+                            sb.append("simulfy-text");
+                        }
+
+                    }
+                }
+            }
+        }
+
+        return sb;
     }
 }
