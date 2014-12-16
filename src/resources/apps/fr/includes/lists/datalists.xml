@@ -1,0 +1,53 @@
+<lists>
+<technologies>
+<item><value>10</value><label>Agriculture and Food</label></item>
+<item><value>11</value><label>Assisted Living</label></item>
+<item><value>12</value><label>Biosciences</label></item>
+<item><value>13</value><label>Chemical Engineering</label></item>
+<item><value>14</value><label>Energy Generation and Supply</label></item>
+<item><value>15</value><label>Built Environment</label></item>
+<item><value>16</value><label>Creative Industries</label></item>
+<item><value>17</value><label>Digital Services</label></item>
+<item><value>18</value><label>Electrical engineering</label></item>
+<item><value>19</value><label>Environmental Sustainability</label></item>
+<item><value>20</value><label>Healthcare</label></item>
+<item><value>21</value><label>High Value Services - Electronic commerce</label></item>
+<item><value>22</value><label>IT</label></item>
+<item><value>23</value><label>Management Science</label></item>
+<item><value>24</value><label>Manufacturing</label></item>
+<item><value>25</value><label>Marketing</label></item>
+<item><value>26</value><label>Materials</label></item>
+<item><value>27</value><label>Mechanical Engineering</label></item>
+<item><value>28</value><label>Transport</label></item>
+<item><value>29</value><label>Social Science</label></item>
+<item><value>30</value><label>Nanoscale Technologies</label></item>
+<item><value>31</value><label>Space Technologies</label></item>
+</technologies>
+<markets>
+<item><value>5010</value><label>Energy</label></item>
+<item><value>5110</value><label>Chemicals</label></item>
+<item><value>5120</value><label>Mineral Resources</label></item>
+<item><value>5130</value><label>Applied Resources</label></item>
+<item><value>5210</value><label>Industrial Goods</label></item>
+<item><value>5220</value><label>Industrial Services</label></item>
+<item><value>5230</value><label>Industrial Conglomerates</label></item>
+<item><value>5240</value><label>Transportation</label></item>
+<item><value>5310</value><label>Automobiles &amp; Auto Parts</label></item>
+<item><value>5320</value><label>Cyclical Consumer Products</label></item>
+<item><value>5330</value><label>Cyclical Consumer Services</label></item>
+<item><value>5340</value><label>Retailers</label></item>
+<item><value>5410</value><label>Food &amp; Beverages</label></item>
+<item><value>5420</value><label>Personal &amp; Household Products &amp; Services</label></item>
+<item><value>5430</value><label>Food &amp; Drug Retailing</label></item>
+<item><value>5510</value><label>Banking &amp; Investment Services</label></item>
+<item><value>5530</value><label>Insurance</label></item>
+<item><value>5540</value><label>Real Estate</label></item>
+<item><value>5550</value><label>Investment Trusts</label></item>
+<item><value>5610</value><label>Healthcare Services</label></item>
+<item><value>5620</value><label>Pharmaceuticals &amp; Medical Research</label></item>
+<item><value>5710</value><label>Technology Equipment</label></item>
+<item><value>5720</value><label>Software &amp; IT Services</label></item>
+<item><value>5810</value><label>Telecommunications Services</label></item>
+<item><value>5910</value><label>Utilities</label></item>
+</markets>
+</lists>
