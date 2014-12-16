@@ -104,14 +104,18 @@
                 </xf:instance>
 
                 <!-- Errors for controls that have been visited AND which have a non-blank alert message -->
-                <xf:var
+                <!--<xf:var
                     name="visible-errors"
                     as="element(error)*"
                     value="for $e in instance(if (instance('fr-state-instance')/incremental != 'false') then 'fr-errors-instance' else 'fr-snapshot-instance')/error
                            return
                                if (xxf:visited($e/@absolute-id))
                                then $e
-                               else ()"/>
+                               else ()"/>-->
+
+                <xf:var name="visible-errors" as="element(error)*"
+                    value="for $e in instance(if (instance('fr-state-instance')/incremental != 'false') then 'fr-errors-instance' else 'fr-snapshot-instance')/error[normalize-space(@alert)]
+                    return $e"/>
 
                 <xf:bind ref="instance('fr-state-instance')">
                     <xf:bind ref="counts/@alert"                     calculate="count(instance('fr-errors-instance')/error)"/>
@@ -354,7 +358,7 @@ Inserting error information into error list:
                                     </xf:label>
                                 </xsl:for-each>
                                 <!-- Anchor for navigation -->
-                                <xh:a name="fr-errors"/>
+                                <!--<xh:a name="fr-errors"/>-->
                                 <xh:table class="fr-error-list">
 
                                     <xh:colgroup>
@@ -395,14 +399,13 @@ Inserting error information into error list:
                                         <xh:tr>
                                             <!-- Clickable / linkable label -->
                                             <xf:var name="has-label" value="exists(normalize-space(@label))"/>
+                                            <xf:var name="no-label" value="normalize-space(@label) = ''" />
                                             <xf:var name="focusable" value="xxf:focusable(@absolute-id)"/>
                                             <xh:td class="fr-error-number"><xf:output value="position()"/></xh:td>
                                             <xh:td>
                                                 <xf:group ref=".[$has-label]">
-                                                    <!-- In noscript mode, use a plain link to the client id -->
-                                                    <xf:group ref=".[$noscript]">
-                                                        <xh:a href="#{{xxf:client-id(@absolute-id)}}"><xf:output mediatype="text/html" value="@label" class="fr-error-label"/></xh:a>
-                                                    </xf:group>
+                                                    <xh:a href="#{{xxf:client-id(@absolute-id)}}"><xf:output mediatype="text/html" value="@label" class="fr-error-label"/></xh:a>
+
                                                     <!-- If the control is not focusable, don't link -->
                                                     <xf:output
                                                         ref=".[not($noscript) and not($focusable)]"
@@ -410,10 +413,14 @@ Inserting error information into error list:
                                                         mediatype="text/html"
                                                         value="@label"/>
                                                     <!-- Otherwise use trigger -->
-                                                    <xf:trigger ref=".[not($noscript) and $focusable]" appearance="minimal" class="fr-error-label">
+                                                    <!--<xf:trigger ref=".[not($noscript) and $focusable]" appearance="minimal" class="fr-error-label">
                                                         <xf:label mediatype="text/html" value="@label"/>
                                                         <xf:setfocus ev:event="DOMActivate" control="{{@absolute-id}}"/>
-                                                    </xf:trigger>
+                                                    </xf:trigger>-->
+                                                </xf:group>
+                                                <xf:group ref=".[$no-label]">
+                                                    <!-- In noscript mode, use a plain link to the effective id -->
+                                                    <xh:a href="#{{xxf:client-id(@absolute-id)}}">Validation error</xh:a>
                                                 </xf:group>
                                             </xh:td>
                                             <xh:td>

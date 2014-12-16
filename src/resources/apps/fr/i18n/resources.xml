@@ -166,7 +166,7 @@
         <detail>
             <messages>
                 <save-success>Document saved successfully!</save-success>
-                <save-draft-success>Draft saved successfully!</save-draft-success>
+                <save-draft-success>&lt;h2&gt;&lt;i class=&quot;icon-ok-sign&quot;&gt;&lt;/i&gt; Application saved&lt;/h2&gt;&lt;p&gt; Please remember to submit your form to complete your application&lt;/p&gt;</save-draft-success>
                 <email-success>Email sent successfully!</email-success>
                 <form-validation-error>There are validation errors. Please retry once all fields have been properly filled-out.</form-validation-error>
                 <database-error>There was an error communicating with the database. Please contact the application administrator.</database-error>
@@ -211,7 +211,7 @@
                 <check-errors-in-form>This form contains errors</check-errors-in-form>
                 <error-details>View error details</error-details>
                 <confirm>Confirm</confirm>
-                <alert>Missing or incorrect value</alert>
+                <alert>Please fill out or correct this field</alert>
 
                 <captcha-label>Captcha</captcha-label>
                 <captcha-alert>The value you entered didn't match the image, please try again</captcha-alert>

@@ -363,4 +363,17 @@
         </xsl:copy>
     </xsl:template>
 
+    <xsl:template match="fr:section[not(contains(@id, 'template-address'))]/@id">
+        <xsl:copy />
+        <xsl:attribute name="class">
+            <xsl:value-of select="concat(../@class, ' tsbsection-', .)"/>
+        </xsl:attribute>
+    </xsl:template>
+    <xsl:template match="fr:section[contains(@id, 'template-address')]/@id">
+        <xsl:copy />
+        <xsl:attribute name="class">
+            <xsl:value-of select="concat(../@class, ' tsbsection-template-', .)"/>
+        </xsl:attribute>
+    </xsl:template>
+
 </xsl:stylesheet>

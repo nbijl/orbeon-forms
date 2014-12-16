@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2009 Orbeon, Inc.
+  
+  This program is free software; you can redistribute it and/or modify it under the terms of the
+  GNU Lesser General Public License as published by the Free Software Foundation; either version
+  2.1 of the License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
+  
+  The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+  -->
+<xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
+         xmlns:xf="http://www.w3.org/2002/xforms"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:xbl="http://www.w3.org/ns/xbl"
+         xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+         xmlns:xforms="http://www.w3.org/2002/xforms"
+         xmlns:xxforms="http://orbeon.org/oxf/xml/xforms"
+          xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    
+    <xbl:binding element="fr|textcount" id="fr-textcount">
+        <metadata xmlns="http://orbeon.org/oxf/xml/form-builder" xmlns:xforms="http://www.w3.org/2002/xforms">
+            <display-name lang="en">Textarea with counter</display-name>
+            <icon lang="en">
+                <small-icon>/forms/orbeon/builder/images/input.png</small-icon>
+                <large-icon>/forms/orbeon/builder/images/input.png</large-icon>
+            </icon>
+            <fb:template>
+                <fr:textcount id="" ref="" max-chars="" max-words="" type="" xmlns:xf="http://www.w3.org/2002/xforms">
+                    <xforms:label ref=""/>
+                    <xforms:hint ref=""/>
+                    <xforms:help ref=""/>
+                    <xforms:alert ref=""/>
+                </fr:textcount>
+            </fb:template>
+            <control-details>
+                <xforms:select1 ref="@type">
+                    <xforms:item>
+                        <xforms:label>Characters</xforms:label>
+                        <xforms:value>chars</xforms:value>
+                    </xforms:item>
+                    <xforms:item>
+                        <xforms:label>Words</xforms:label>
+                        <xforms:value>words</xforms:value>
+                    </xforms:item>
+                </xforms:select1>
+                <xforms:input ref="@max-chars" style="width:100px">
+                    <xforms:label lang="en">Maximum number of characters</xforms:label>
+                </xforms:input>
+                <xforms:input ref="@max-words" style="width:100px">
+                    <xforms:label lang="en">Maximum number of words</xforms:label>
+                </xforms:input>
+            </control-details>
+        </metadata>
+        <xbl:implementation>
+            <xf:model>
+                <xf:instance id="max">
+                    <data>
+                        <max-chars/>
+                        <max-words/>
+                    </data>
+                </xf:instance>
+                <xf:action ev:event="xforms-enabled xforms-value-changed">
+                    <xf:setvalue ref="instance('max')//max-chars" value="string('hoi')"/>
+                </xf:action>
+            </xf:model>
+        </xbl:implementation>
+        <xbl:template>
+            <xf:group>
+                <!-- Outer group implementing the single-node binding -->
+                <xforms:group xbl:attr="model context ref bind" xxbl:scope="outer">
+                    <!-- Copy LHHA elements if any -->
+                    <xbl:content includes=":root > xforms|label, :root > xforms|help, :root > xforms|hint, :root > xforms|alert"/>
+                    <!-- Inner group -->
+                    <xforms:group xxbl:scope="inner">
+                        <xxforms:variable name="binding" as="node()?">
+                            <xxforms:sequence select="." xxbl:scope="outer"/>
+                        </xxforms:variable>
+                        <!-- Input points to the external single-node binding -->
+                        <xforms:textarea ref="$binding" incremental="true"/>
+                        <xxforms:variable name="char-limit" xbl:attr="xbl:text=max-chars"/>
+                        <xxforms:variable name="chars" select="string-length($binding)"/>
+                        <xxforms:variable name="chars-left">
+                            <xxforms:sequence value="number($char-limit) - number($chars)"/>
+                        </xxforms:variable>
+                        <xxforms:variable name="word-limit" xbl:attr="xbl:text=max-words"/>
+                        <xxforms:variable name="words" select="count(tokenize(normalize-space(string-join($binding, '')), ' '))"/>
+                        <xxforms:variable name="words-left">
+                            <xxforms:sequence value="number($word-limit) - number($words)"/>
+                        </xxforms:variable>
+                        <xhtml:table>
+                            <xhtml:tr class="{if (string-length($char-limit) = 0) then 'xforms-disabled' else null}">
+                                <!--<xhtml:td>
+                                    <xforms:output value="concat('Characters: ',$chars)"/>
+                                </xhtml:td>-->
+                                <xhtml:td>
+                                    <xforms:output value="concat('Characters left: ',$chars-left)" class="{if($chars-left &lt; 0) then 'ltzero' else 'gtzero'}"/>
+                                </xhtml:td>
+                            </xhtml:tr>
+                            <xhtml:tr class="{if (string-length($word-limit) = 0) then 'xforms-disabled' else null}">
+                                <!--<xhtml:td>
+                                    <xforms:output value="concat('Words: ',$words)"/>
+                                </xhtml:td>-->
+                                <xhtml:td>
+                                    <xforms:output value="concat('Words left: ',$words-left)" class="{if($words-left &lt; 0) then 'ltzero' else 'gtzero'}"/>
+                                </xhtml:td>
+                            </xhtml:tr>
+                        </xhtml:table>
+                    </xforms:group>
+                </xforms:group>
+            </xf:group>
+        </xbl:template>
+    </xbl:binding>
+</xbl:xbl>

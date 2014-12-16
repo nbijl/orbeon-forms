@@ -1,0 +1,171 @@
+<!--
+  Copyright (C) 2009 Orbeon, Inc.
+
+  This program is free software; you can redistribute it and/or modify it under the terms of the
+  GNU Lesser General Public License as published by the Free Software Foundation; either version
+  2.1 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
+
+  The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+  -->
+<xbl:xbl xmlns:xhtml="http://www.w3.org/1999/xhtml"
+         xmlns:xforms="http://www.w3.org/2002/xforms"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xxforms="http://orbeon.org/oxf/xml/xforms"
+         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:saxon="http://saxon.sf.net/"
+         xmlns:xbl="http://www.w3.org/ns/xbl"
+         xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+         xmlns:oxf="http://www.orbeon.com/oxf/processors"
+         xmlns:exf="http://www.exforms.org/exf/1-0">
+
+    <!--
+        Selection control appearing like a box containing rows of checkboxes.
+     -->
+    <xbl:binding id="fr-databound-check-binding" element="fr|databound-check" xxbl:mode="binding lhha">
+
+        <!-- Orbeon Form Builder Component Metadata -->
+        <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+            <display-name lang="en">Dynamic Checkboxes</display-name>
+            <display-name lang="fr">Cases à cocher défilantes</display-name>
+            <display-name lang="ru">Контейнер с галочками</display-name>
+            <icon lang="en">
+                <small-icon>/forms/orbeon/builder/images/checkbox.png</small-icon>
+                <large-icon>/forms/orbeon/builder/images/checkbox.png</large-icon>
+            </icon>
+            <editors static-itemset="true"/>
+            <template>
+                 <fr:databound-check headername="" headervalue=""  resource="" ref="">
+                     <xforms:label ref=""/>
+                     <xforms:hint ref=""/>
+                     <xforms:help ref=""/>
+                     <xforms:alert ref=""/>
+                     <xforms:itemset ref="">
+                        <xforms:label ref="label"/>
+                        <xforms:value ref="value"/>
+                    </xforms:itemset>
+                </fr:databound-check>
+            </template>
+            <control-details>
+				<xforms:input ref="@resource">
+					<xforms:label lang="en">Resource URL</xforms:label>
+					<xforms:label lang="fr">URL de la ressource</xforms:label>
+					<xforms:label lang="ru">URL ресурса</xforms:label>
+					<xforms:hint lang="en">HTTP URL returning data used to populate the
+						dropdown</xforms:hint>
+					<xforms:hint lang="fr">URL HTTP auquel réside le service</xforms:hint>
+					<xforms:hint lang="ru">HTTP URL сервиса, данными из которого будет
+						заполнен выпадающий список</xforms:hint>
+				</xforms:input>
+				<xforms:input ref="xforms:itemset/@ref">
+					<xforms:label ref="$resources/dialog-actions/items/label" />
+					<xforms:hint ref="$resources/dialog-actions/items/hint" />
+				</xforms:input>
+				<xforms:input ref="xforms:itemset/xforms:label/@ref">
+					<xforms:label ref="$resources/dialog-actions/label/label" />
+					<xforms:hint ref="$resources/dialog-actions/label/hint" />
+				</xforms:input>
+				<xforms:input ref="xforms:itemset/xforms:value/@ref">
+					<xforms:label ref="$resources/dialog-actions/value/label" />
+					<xforms:hint ref="$resources/dialog-actions/value/hint" />
+				</xforms:input>
+				<xforms:input ref="@headername">
+					<xforms:label>Header name</xforms:label>
+				</xforms:input>
+				<xforms:input ref="@headervalue">
+					<xforms:label>Header value</xforms:label>
+				</xforms:input>
+			</control-details>
+
+
+        </metadata>
+<xbl:implementation>
+	<!-- What do when doing a refresh -->
+	<xforms:model>
+				<xforms:instance>
+					<data>
+						<header>
+							<name></name>
+							<value></value>
+						</header>
+
+					</data>
+				</xforms:instance>
+				<!-- Contains the data from which the itemset is populated -->
+				<xforms:instance id="itemset">
+					<dummy />
+				</xforms:instance>
+				<!-- What do when doing a refresh -->
+				<xforms:submission id="get-itemset" method="get"
+					resource="{event('resource')}" replace="instance" serialization="none">
+					<xforms:header nodeset="/data/header">
+						<xforms:name value="./name" />
+						<xforms:value value="./value" />
+					</xforms:header>
+					<xforms:action ev:event="xforms-submit-error">
+						<xforms:insert ref="instance('itemset')" origin="xxforms:element('dummy')" />
+					</xforms:action>
+				</xforms:submission>
+			</xforms:model>
+
+</xbl:implementation>
+       <xbl:resources>
+            <xbl:style>
+                .xbl-fr-databound-check {
+                    display: inline-block;
+                    box-sizing: border-box;
+                    width: 100%;
+                }
+                .xbl-fr-databound-check .xforms-select-appearance-full .xforms-items {
+                    display: block;
+                    box-sizing: border-box;
+                    border: 1px solid gray;
+                    height: 7em;
+                    width: 100%;
+                    overflow-y: scroll;
+                    background-color: white;
+                }
+            </xbl:style>
+        </xbl:resources>
+        <xbl:template>
+        <xxforms:variable name="resource-avt" xbl:attr="xbl:text=resource"
+				xxbl:scope="outer" />
+        			<xxforms:variable name="resource">
+<xxforms:sequence select="xxforms:evaluate-avt($resource-avt)"
+					xxbl:scope="outer" />
+        <xforms:action ev:event="xforms-enabled xforms-value-changed">
+
+					<xxforms:variable name="headervalue" xbl:attr="xbl:text=headervalue" />
+					<xxforms:variable name="headername" xbl:attr="xbl:text=headername" />
+
+					<xforms:setvalue ref="/data/header/value" value="$headervalue" />
+					<xforms:setvalue ref="/data/header/name" value="$headername" />
+
+					<!-- Update itemset based on resource if not blank (can be blank e.g.
+						in builder) -->
+					<xforms:send if="normalize-space($resource)" submission="get-itemset">
+						<xxforms:context name="resource" value="$resource" />
+
+					</xforms:send>
+					<!-- Get sequence of values in the new itemset -->
+					<xxforms:variable name="new-values"
+						select="xxforms:itemset('select', 'xml', false())//value/string()" />
+					</xforms:action>
+					</xxforms:variable>
+            <xforms:select appearance="full" ref="xxforms:binding('fr-databound-check-binding')">
+
+                <xforms:choices context="instance()">
+                	<!-- Itemset unconventionally evaluates wrt inner scope -->
+					<xbl:content
+						includes=":root > xforms|itemset, :root > xforms|item, :root > xforms|choices"
+						xxbl:scope="inner" />
+						</xforms:choices>
+            </xforms:select>
+        </xbl:template>
+    </xbl:binding>
+</xbl:xbl>

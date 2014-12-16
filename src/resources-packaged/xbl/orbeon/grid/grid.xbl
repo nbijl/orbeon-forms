@@ -173,6 +173,14 @@
 
                             <!-- Grid table -->
                             <xh:table class="{'fr-grid', concat('fr-grid-', $static-col-count),
+                                            if ($static-col-count gt 3) then 'multi-column-grid' else (),
+                                            if ($static-col-count eq 2) then 'multi-column-2' else (),
+                                            if ($static-col-count eq 3) then 'multi-column-3' else (),
+                                            if ($static-col-count eq 4) then 'multi-column-4' else (),
+                                            if ($static-col-count eq 5) then 'multi-column-5' else (),
+                                            if ($static-col-count eq 6) then 'multi-column-6' else (),
+                                            if ($static-col-count eq 7) then 'multi-column-7' else (),
+                                            if ($static-col-count eq 8) then 'multi-column-8' else (),
                                               (: Control name might not be available (unclear why normalize-space() is needed) :)
                                               for $name in fbf:controlNameFromId(@id)[normalize-space()] return concat('fr-grid-', $name),
                                               if ($is-repeat)

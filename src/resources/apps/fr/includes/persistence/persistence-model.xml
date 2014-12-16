@@ -22,7 +22,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
         xmlns:frf="java:org.orbeon.oxf.fr.FormRunner"
-        xmlns:secure="java:org.orbeon.oxf.util.SecureUtils"
         xmlns:process="java:org.orbeon.oxf.fr.process.SimpleProcess"
         xmlns:migration="java:org.orbeon.oxf.fr.DataMigration">
 
@@ -37,7 +36,7 @@
     <xf:var name="persistence-instance" value="instance('fr-persistence-instance')"/>
 
     <xf:var name="autosave-elem"        value="$persistence-instance/autosave"/>
-    <xf:var name="autosave-delay"       value="for $d in xxf:property(string-join(('oxf.fr.detail.autosave-delay', $app, $form), '.'))
+    <xf:var name="autosave-delay"       value="for $d in xxf:property(string-join(('oxf.fr.detail.autosave-delay', $app, $form, $document), '.'))
                                                return xs:integer($d[. castable as xs:integer])"/>
     <!-- Autosave disabled with Form Builder, see https://github.com/orbeon/orbeon-forms/issues/1169 -->
     <xf:var name="autosave-enabled"     value="frf:autosaveSupported($app, $form)
@@ -77,7 +76,7 @@
 
             <!-- Create random document id if none is provided. This is the default for 'new', but a missing id is also
                  allowed for 'edit', 'view', etc., when data is posted to the page. -->
-            <xf:setvalue if="$is-new-id" ref="$document-element" value="secure:randomHexId()"/>
+            <xf:setvalue if="$is-new-id" ref="$document-element" value="digest(string(random(true)), 'MD5', 'hex')"/>
 
             <!-- Case of 'new' mode where we load the initial data via a service -->
             <xf:var name="new-from-service" value="$mode = ('new', 'test') and xxf:property(string-join(('oxf.fr.detail.new.service.enable', $app, $form), '.'))"/>
@@ -317,7 +316,7 @@
     </xf:action>
 
     <!-- New document operation -->
-    <xf:setvalue event="fr-new-document" ref="$document-element" value="secure:randomHexId()"/>
+    <xf:setvalue event="fr-new-document" ref="$document-element" value="digest(string(random(true)),'MD5','hex')"/>
 
     <!-- Delete operation -->
     <xf:action event="fr-delete-data">
@@ -519,9 +518,9 @@
     </xf:instance>
 
     <!-- React to issue loading the document. We consider this fatal. -->
-    <xf:action event="xforms-submit-error" target="fr-get-document-submission" type="xpath">
+    <!--<xf:action event="xforms-submit-error" target="fr-get-document-submission" type="xpath">
         frf:sendError((event('response-status-code'), 500)[1])
-    </xf:action>
+    </xf:action>-->
 
     <!-- Clear message -->
     <xf:action observer="#document" event="DOMFocusIn">

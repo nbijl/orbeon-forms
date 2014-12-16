@@ -1188,6 +1188,14 @@
                                     var documentElement = ORBEON.util.Dom.get(controlId);
                                     if (documentElement == null) {
                                         documentElement = ORBEON.util.Dom.get("group-begin-" + controlId);
+
+                                        // START OF Fix by WORTH
+                                        if (documentElement == null && !_.isUndefined(window.orbeonjs.proxyportletprefix)){
+                                            //ORBEON.util.Utils.logMessage("use my fix'" + window.orbeonjs.proxyportletprefix + controlId + "'");
+                                            documentElement = ORBEON.util.Dom.get(window.orbeonjs.proxyportletprefix + controlId);
+                                        }
+                                        // END OF Fix by WORTH
+
                                         if (documentElement == null) ORBEON.util.Utils.logMessage ("Can't find element or iteration with ID '" + controlId + "'");
                                     }
                                     var documentElementClasses = documentElement.className.split(" ");

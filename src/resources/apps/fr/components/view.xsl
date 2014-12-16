@@ -35,12 +35,39 @@
     <xsl:variable name="default-page-template" as="element(*)*">
         <fr:navbar/>
 
-        <fr:description/>
+        <!--<fr:description/>-->
+        <xxf:variable name="errorcount" as="xs:string" model="fr-error-summary-model"
+              select="for $c in visible-errors-count return
+                  if ($c castable as xs:integer and xs:integer($c) > 0) then '' else 'no-errors'"/>
+
+        <xh:div class="submitapplication-bar {{$errorcount}}">
+            <xh:div>
+                <xh:div class="autosave"></xh:div>
+                <xh:div class="orb-error"></xh:div>
+                <fr:buttons-bar/>
+
+                <xsl:if test="$error-summary-top">
+                    <!-- added error summuary -->
+                    <xh:div class="fr-custom-error">
+                        <xh:div class="fr-error-count">
+                            <xf:group model="fr-error-summary-model" ref=".[valid = false() and visible-errors-count gt 0]">
+                                <xf:output value="visible-errors-count"/> fields remaining for validation
+                            </xf:group>
+                        </xh:div>
+                        <xh:div class="fr-error-display">
+                            <xh:div class="arrow-up"></xh:div>
+                            <xh:div class="arrow-up-border"></xh:div>
+                            <fr:error-summary position="top"/>
+                        </xh:div>
+                    </xh:div>
+                </xsl:if>
+            </xh:div>
+        </xh:div>
 
         <!-- Error summary (if at top) -->
-        <xsl:if test="$error-summary-top">
+        <!--<xsl:if test="$error-summary-top">
             <fr:error-summary position="top"/>
-        </xsl:if>
+        </xsl:if>-->
 
         <fr:row>
             <fr:toc/>
@@ -667,9 +694,16 @@
     <xsl:template match="fr:toc" name="fr-toc">
         <!-- This is statically built in XSLT instead of using XForms -->
         <xsl:if test="$has-toc and $is-detail and not($is-form-builder) and count($body//fr:section) ge $min-toc">
-            <xh:div class="fr-toc well sidebar-nav">
+            <xh:div class="fr-toc">
+
+                <xh:div class="fr-section-info">
+                    <xh:h2>Form Info</xh:h2>
+                    <xh:p>This form is shared with:</xh:p>
+                    <xh:div class="collaborator" />
+                </xh:div>
+
+                <xh:h2>Form Sections</xh:h2>
                 <xh:ul class="nav nav-list">
-                    <xh:li class="nav-header"><xf:output ref="$fr-resources/summary/titles/toc"/></xh:li>
                     <xsl:apply-templates select="$body" mode="fr-toc-sections"/>
                 </xh:ul>
             </xh:div>
@@ -685,21 +719,27 @@
 
     <!-- TOC: handle section -->
     <xsl:template match="fr:section" mode="fr-toc-sections">
-        <xh:li xxf:control="xf:group">
-            <!-- Propagate binding so that entry for section disappears if the section is non-relevant -->
+        <xh:li class="menuitem">
             <xsl:copy-of select="@model | @context | @bind | @ref"/>
-            <!-- Clicking sets the focus -->
+            <xf:group bind="{@bind}">
+                <xh:a href="#{@id}"><xf:output value="{xf:label/@ref}"/></xh:a>
+            </xf:group>
+        </xh:li>
+        <!--<xh:li xxf:control="xf:group">
+            &lt;!&ndash; Propagate binding so that entry for section disappears if the section is non-relevant &ndash;&gt;
+            <xsl:copy-of select="@model | @context | @bind | @ref"/>
+            &lt;!&ndash; Clicking sets the focus &ndash;&gt;
             <xf:trigger appearance="minimal">
                 <xf:label value="xxf:label('{@id}')"/>
                 <xf:setfocus ev:event="DOMActivate" control="{@id}" input-only="true"/>
             </xf:trigger>
-            <!-- Sub-sections if any -->
+            &lt;!&ndash; Sub-sections if any &ndash;&gt;
             <xsl:if test="exists(fr:section)">
                 <xh:ol>
                     <xsl:apply-templates mode="fr-toc-sections"/>
                 </xh:ol>
             </xsl:if>
-        </xh:li>
+        </xh:li>-->
     </xsl:template>
 
     <!-- Add a default xf:alert for those fields which don't have one. Only do this within grids and dialogs. -->

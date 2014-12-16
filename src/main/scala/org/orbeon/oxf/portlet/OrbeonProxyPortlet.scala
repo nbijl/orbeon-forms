@@ -56,7 +56,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
     private var settingsOpt: Option[PortletSettings] = None
 
     override def init(config: PortletConfig) {
-        APISupport.Logger.info("initializing Form Runner proxy portlet")
+        APISupport.Logger.info("initializing Form Runner proxy portlet with WORTH modifications")
         super.init(config)
         settingsOpt = Some(
             PortletSettings(

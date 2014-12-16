@@ -49,6 +49,24 @@
         </xh:div>
     </xsl:template>
 
+    <xsl:template match="xh:script">
+        <!-- JQuery is already available where we will be embedding (Worth IT Edit) -->
+        <xsl:if test="not(contains(@src,'jquery'))">
+            <xh:script type="application/javascript">
+                <xsl:if test="string(@src)">
+                    <xsl:attribute name="src" select="@src"/>
+                </xsl:if>
+                <xsl:if test="string(@type)">
+                    <xsl:attribute name="type" select="@type"/>
+                </xsl:if>
+                <xsl:if test="string(@class)">
+                    <xsl:attribute name="class" select="@class"/>
+                </xsl:if>
+                <xsl:copy-of select="node()" />
+            </xh:script>
+        </xsl:if>
+    </xsl:template>
+
     <!-- Remember that we are embeddable -->
     <xsl:template match="xh:form">
         <xsl:copy>

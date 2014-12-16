@@ -21,6 +21,9 @@
 
     <files path="(?!/([^/]+)/service/).+\.(gif|css|pdf|json|js|coffee|map|png|jpg|xsd|htc|ico|swf|html|htm|txt)"/>
 
+    <!-- Allow the datalists.xml file for IV -->
+    <files path="/apps/fr/includes/lists/datalists.xml"  mediatype="application/xml"/>
+
     <!-- ==== Pages ================================================================================================ -->
 
     <!-- Home application -->

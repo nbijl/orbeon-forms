@@ -248,4 +248,4 @@ Event.onDOMReady ->
         # Close calendar when users start typing
         Events.keydownEvent.subscribe (event) ->
             if appliesToControl event.control
-                closeCalendar() if event.target.className != "yui-cal-nav-yc"
+                closeCalendar() if event.target.className.indexOf("yui-cal-nav-yc") < 0

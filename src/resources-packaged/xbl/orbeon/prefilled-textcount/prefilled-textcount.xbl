@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2009 Orbeon, Inc.
+  
+  This program is free software; you can redistribute it and/or modify it under the terms of the
+  GNU Lesser General Public License as published by the Free Software Foundation; either version
+  2.1 of the License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
+  
+  The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+  -->
+<xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
+         xmlns:xf="http://www.w3.org/2002/xforms"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:xbl="http://www.w3.org/ns/xbl"
+         xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+         xmlns:xforms="http://www.w3.org/2002/xforms"
+         xmlns:xxforms="http://orbeon.org/oxf/xml/xforms"
+         xmlns:xhtml="http://www.w3.org/1999/xhtml"
+         xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    
+    <xbl:binding element="fr|prefilled-textcount" id="fr-prefilled-textcount">
+        <metadata xmlns="http://orbeon.org/oxf/xml/form-builder" xmlns:xforms="http://www.w3.org/2002/xforms">
+            <display-name lang="en">Prefilled textarea with counter</display-name>
+            <icon lang="en">
+                <small-icon>/forms/orbeon/builder/images/input.png</small-icon>
+                <large-icon>/forms/orbeon/builder/images/input.png</large-icon>
+            </icon>
+            <fb:template>
+                <fr:prefilled-textcount id="" appearance="minimal" max-chars="" max-words="" type="" headername="" headervalue="" ref="" resource="" path="" xmlns:xforms="http://www.w3.org/2002/xforms">
+                    <xforms:label ref=""/>
+                    <xforms:hint ref=""/>
+                    <xforms:help ref=""/>
+                    <xforms:alert ref=""/>
+                </fr:prefilled-textcount>
+            </fb:template>
+            <control-details>
+                <xforms:select1 ref="@type">
+                    <xforms:item>
+                        <xforms:label>Characters</xforms:label>
+                        <xforms:value>chars</xforms:value>
+                    </xforms:item>
+                    <xforms:item>
+                        <xforms:label>Words</xforms:label>
+                        <xforms:value>words</xforms:value>
+                    </xforms:item>
+                </xforms:select1>
+                <xforms:input ref="@max-chars" style="width:100px">
+                    <xforms:label lang="en">Maximum number of characters</xforms:label>
+                </xforms:input>
+                <xforms:input ref="@max-words" style="width:100px">
+                    <xforms:label lang="en">Maximum number of words</xforms:label>
+                </xforms:input>
+                <xforms:input ref="@resource">
+                    <xforms:label lang="en">Resource URI</xforms:label>
+                    <xforms:hint lang="en">HTTP URI returning data used for the input</xforms:hint>
+                </xforms:input>
+                <xforms:input ref="@path">
+                    <xforms:label>Path</xforms:label>
+                    <xforms:hint>XPath to the relevant node in the resource-XML</xforms:hint>
+                </xforms:input>
+           		<xf:input ref="@headername">
+					<xf:label>Header name</xf:label>
+				</xf:input>
+				<xf:input ref="@headervalue">
+					<xf:label>Header value</xf:label>
+				</xf:input>
+            </control-details>
+        </metadata>
+        <xbl:implementation>
+            <xf:model>
+                <xf:instance id="max">
+                    <data>
+                        <max-chars/>
+                        <max-words/>
+                        <value/>
+                        	
+						<header>
+							<name />
+							<value />
+						</header>
+                    </data>
+                </xf:instance>
+                <xforms:submission id="get-prefilled-data" method="get" resource="{event('resource')}" replace="instance" serialization="none">
+                   <xf:header nodeset="/data/header">
+						<xf:name value="./name" />
+						<xf:value value="./value" />
+					</xf:header>
+                    <xf:action ev:event="xforms-submit-error">
+                        <xf:setvalue ref="instance()//value" value="string('data retrieval failed')"/>
+                    </xf:action>
+                </xforms:submission>
+                <xf:action ev:event="xforms-enabled xforms-value-changed">
+                    <xf:setvalue ref="instance('max')//max-chars" value="string('hoi')"/>
+                </xf:action>
+            </xf:model>
+        </xbl:implementation>
+        <xbl:template>
+            <xf:group appearance="xxf:internal" xsl:version="2.0">
+                <xxforms:variable name="path" xbl:attr="xbl:text=path"/>
+                <xxf:variable name="resource-avt" xbl:attr="xbl:text=resource" xxbl:scope="outer"/>
+                <xxf:variable name="resource">
+                    <xxf:sequence select="xxf:evaluate-avt($resource-avt)" xxbl:scope="outer"/>
+                    <xf:action ev:event="xforms-enabled xforms-value-changed">
+                    	
+                    	<xxf:variable name="headervalue" xbl:attr="xbl:text=headervalue" />
+						<xxf:variable name="headername" xbl:attr="xbl:text=headername" />
+
+						<xf:setvalue ref="/data/header/value" value="$headervalue" />
+						<xf:setvalue ref="/data/header/name" value="$headername" />
+
+
+                        <!-- Update instance based on resource if not blank (can be blank e.g. in builder) -->
+                        <xxforms:variable name="binding" as="node()?">
+                            <xxforms:sequence select="." xxbl:scope="outer"/>
+                        </xxforms:variable>
+                        <xf:action if="string-length($binding/@value) = 0">
+                            <xf:send if="normalize-space($resource)" submission="get-prefilled-data">
+                                <xxf:context name="resource" value="$resource"/>
+                            </xf:send>
+                        </xf:action>
+                    </xf:action>
+                </xxf:variable>
+                <!-- Outer group implementing the single-node binding -->
+                <xforms:group xbl:attr="model context ref bind" xxbl:scope="outer">
+                    <!-- Copy LHHA elements if any -->
+                    <xbl:content includes=":root > xforms|label, :root > xforms|help, :root > xforms|hint, :root > xforms|alert"/>
+                    <!-- Inner group -->
+                    <xforms:group xxbl:scope="inner">
+                        <xxforms:variable name="binding" as="node()?">
+                            <xxforms:sequence select="." xxbl:scope="outer"/>
+                        </xxforms:variable>
+                        <!-- Input points to the external single-node binding -->
+                        <xxforms:variable name="path" xbl:attr="xbl:text=path"/>
+                        <xforms:textarea ref="$binding" incremental="true">
+                            <xf:setvalue ref="$binding" if="string-length($binding) = 0" value="xxforms:evaluate(concat('instance()',$path))" ev:event="xforms-submit-done" ev:observer="get-prefilled-data"/>
+                        </xforms:textarea>
+                        <xxforms:variable name="char-limit" xbl:attr="xbl:text=max-chars"/>
+                        <xxforms:variable name="chars" select="string-length($binding)"/>
+                        <xxforms:variable name="chars-left">
+                            <xxforms:sequence value="number($char-limit) - number($chars)"/>
+                        </xxforms:variable>
+                        <xxforms:variable name="word-limit" xbl:attr="xbl:text=max-words"/>
+                        <xxforms:variable name="words" select="count(tokenize(normalize-space(string-join($binding, '')), ' '))"/>
+                        <xxforms:variable name="words-left">
+                            <xxforms:sequence value="number($word-limit) - number($words)"/>
+                        </xxforms:variable>
+                        <xhtml:table>
+                            <xhtml:tr class="{if (string-length($char-limit) = 0) then 'xforms-disabled' else null}">
+                                <!--<xhtml:td>
+                                    <xforms:output value="concat('Characters: ',$chars)"/>
+                                </xhtml:td>-->
+                                <xhtml:td>
+                                    <xforms:output value="concat('Characters left: ',$chars-left)" class="{if($chars-left &lt; 0) then 'ltzero' else 'gtzero'}"/>
+                                </xhtml:td>
+                            </xhtml:tr>
+                            <xhtml:tr class="{if (string-length($word-limit) = 0) then 'xforms-disabled' else null}">
+                                <!--<xhtml:td>
+                                    <xforms:output value="concat('Words: ',$words)"/>
+                                </xhtml:td>-->
+                                <xhtml:td>
+                                    <xforms:output value="concat('Words left: ',$words-left)" class="{if($words-left &lt; 0) then 'ltzero' else 'gtzero'}"/>
+                                </xhtml:td>
+                            </xhtml:tr>
+                        </xhtml:table>
+                    </xforms:group>
+                </xforms:group>
+            </xf:group>
+        </xbl:template>
+    </xbl:binding>
+</xbl:xbl>
