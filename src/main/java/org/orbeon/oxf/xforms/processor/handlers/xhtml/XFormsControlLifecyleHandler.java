@@ -19,7 +19,9 @@ import org.orbeon.oxf.xforms.XFormsConstants;
 import org.orbeon.oxf.xforms.analysis.ElementAnalysis;
 import org.orbeon.oxf.xforms.analysis.controls.StaticLHHASupport;
 import org.orbeon.oxf.xforms.control.XFormsControl;
+import org.orbeon.oxf.xforms.control.XFormsControlFactory;
 import org.orbeon.oxf.xforms.processor.handlers.XFormsControlLifecycleHandlerDelegate;
+import org.orbeon.oxf.xforms.xbl.XBLContainer;
 import org.orbeon.oxf.xml.XMLReceiverHelper;
 import org.orbeon.oxf.xml.XMLConstants;
 import org.orbeon.oxf.xml.XMLUtils;
@@ -27,6 +29,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+
+import java.util.Arrays;
 
 /**
  * This class is a helper base class which handles the lifecycle of producing markup for a control. The following
@@ -310,5 +314,67 @@ public abstract class XFormsControlLifecyleHandler extends XFormsBaseHandlerXHTM
     public String getForEffectiveId(String effectiveId) {
         // Default: point to foo$bar$$c.1-2-3
         return getLHHACId(containingDocument, getEffectiveId(), LHHAC_CODES.get(LHHAC.CONTROL));
+    }
+
+    /*Edit by Worth IT - This function adds a data-id to all classes that are input classes for simulfy */
+    private void getSimulfyAttributes(String uri, XFormsControl xformsControl, String localname, AttributesImpl newAttributes) {
+        XFormsControl selectedControl = xformsControl;
+        // Add extension attributes in no namespace if possible
+        if (XFormsControlFactory.isBuiltinControl(uri, localname)) {
+
+            if (! XFormsControlFactory.isContainerControl(uri, localname)) {
+
+                if (selectedControl != null  && selectedControl.getId()!=null) {
+
+                    String[] ignoreForSimulfy = {"output", "trigger", "section", "grid", "process-button", "href-button", "switch", "error-summary"};
+                    if (!Arrays.asList(ignoreForSimulfy).contains(localname)) {
+
+                            /* Certain elements have the real name in the associatedControl.*/
+                        if (selectedControl.getId().contains("xf")) {
+                            if (selectedControl.container()!=null && selectedControl.container().associatedControl()!=null) {
+                                selectedControl = selectedControl.container().associatedControl();
+                            }
+                        }
+
+                        String parent = "";
+                        String fullparent = "";
+                        if (selectedControl.container()!=null && selectedControl.container().getAssociatedControl()!=null) {
+                            XBLContainer parentpointer=selectedControl.container();
+
+
+                            while (parentpointer!=null) {
+                                if (parentpointer!=null) {
+                                    //for fields without a parent, like the hidden fields
+                                    if(parentpointer.getAssociatedControl()==null)
+                                        break;
+
+                                    parent = parentpointer.getAssociatedControl().getId();
+                                    if (!parent.contains("xf"))
+                                        fullparent = parent + "_" + fullparent;
+                                    parentpointer = parentpointer.getParentXBLContainer();
+
+                                }
+                            }
+                        }
+
+                        if (selectedControl.getId().contains("xf") && !(selectedControl.containingDocument()!=null && selectedControl.containingDocument().getRequestPath().startsWith("/fr/orbeon/builder") )) {
+                            System.err.println("Sending a control ID to simulfy that contains xf for:"+selectedControl.getId()+" localid:"+localname);
+                        }
+
+                        if (parent.contains("xf") && !(selectedControl.containingDocument()!=null && selectedControl.containingDocument().getRequestPath().startsWith("/fr/orbeon/builder") )) {
+                            System.err.println("Sending a parent ID to simulfy that contains xf for:"+selectedControl.getId()+" localid:"+localname);
+                        }
+                        if (selectedControl.getId().contains("hidden-lastChangeDate")) {
+                            newAttributes.addAttribute("","data-id","data-id","data-id","lastChangeDate");
+                        } else {
+                            newAttributes.addAttribute("","data-id","data-id","data-id",fullparent+selectedControl.getId());
+                            newAttributes.addAttribute("","data-section","data-section","data-section",parent);
+
+                        }
+
+                    }
+                }
+            }
+        }
     }
 }
