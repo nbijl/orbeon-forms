@@ -219,7 +219,7 @@
             Suffix CE or PE is separate from the version number.
          -->
         <property name="version.number" value="4.7.0.pre"/>
-        <property name="edition" value="CE"/>
+        <property name="edition" value="PE"/>
         <property name="version.suffix" value=""/>
         <tstamp>
             <format property="time" pattern="yyyyMMddHHmm" timezone="GMT"/>
@@ -735,7 +735,7 @@
     </target>
 
     <target name="embedding-war" depends="embedding-jar" description="Create embedding WAR">
-    	<mkdir dir="${build.distrib.dir}"/>
+    	<!--<mkdir dir="${build.distrib.dir}"/>
         <war destfile="${build.distrib.dir}/${project.name}-${release.number}-embedding.war">
             <webinf dir="descriptors/embedding/WEB-INF"/>
             <lib dir="${build.lib.dir}">
@@ -747,7 +747,7 @@
             <zipfileset dir="descriptors/embedding" prefix="">
                 <include name="*.jsp"/>
             </zipfileset>
-        </war>
+        </war>-->
     </target>
 
     <target name="orbeon-auth-war" depends="classes" description="Creates Orbeon Forms orbeon-auth.war">

@@ -13,6 +13,7 @@
  */
 package org.orbeon.oxf.xforms.submission;
 
+import org.orbeon.oxf.fr.embedding.APISupport;
 import org.orbeon.oxf.util.Connection;
 import org.orbeon.oxf.util.ConnectionResult;
 import org.orbeon.oxf.util.IndentedLogger;
@@ -104,6 +105,7 @@ public class RegularSubmission extends BaseSubmission {
                     
                     // Obtain replacer
                     // TODO: This refers to Submission.
+                    APISupport.Logger().info(" Connection call: " + absoluteResolvedURL.toURL().toString() + " messagebody:  " + absoluteResolvedURL.getRawFragment() + " actuial request meduiayype " + sp.actualRequestMediatype + " qiery srtong: " + sp.queryString);
                     final Replacer replacer = submission().getReplacer(connectionResult, p);
                     if (replacer != null) {
                         // Deserialize here so it can run in parallel

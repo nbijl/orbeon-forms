@@ -5,6 +5,14 @@
       <value>
         <option name="HTML_DO_NOT_INDENT_CHILDREN_OF" value="" />
         <ScalaCodeStyleSettings>
+          <option name="importsWithPrefix">
+            <array>
+              <option value="exclude:scala.collection.mutable.ArrayBuffer" />
+              <option value="exclude:scala.collection.mutable.ListBuffer" />
+              <option value="java.util._" />
+              <option value="scala.collection.mutable._" />
+            </array>
+          </option>
           <option name="ENFORCE_PROCEDURE_SYNTAX_FOR_UNIT" value="false" />
           <option name="REPLACE_CASE_ARROW_WITH_UNICODE_CHAR" value="true" />
           <option name="REPLACE_MAP_ARROW_WITH_UNICODE_CHAR" value="true" />
@@ -41,3 +49,4 @@
     <option name="USE_PER_PROJECT_SETTINGS" value="true" />
   </component>
 </project>
+

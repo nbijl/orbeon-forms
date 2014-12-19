@@ -61,7 +61,7 @@
     <xf:action event="xforms-model-construct-done" if="not($mode = ('summary', 'home')) and $app != '*' and $form != '*'">
 
         <!-- Initialize parameters to pass to "new" service -->
-        <xf:var name="pass-request-parameters" value="xxf:property(string-join(('oxf.fr.detail.new.service.passing-request-parameters', $app, $form), '.'))"/>
+        <xf:var name="pass-request-parameters" value="xxf:property(string-join(('oxf.fr.detail.new.service.passing-request-parameters', $app, $form, $document), '.'))"/>
         <xf:action iterate="xxf:split($pass-request-parameters)">
             <xf:var name="parameter-name" value="."/>
             <xf:var name="parameter-value" value="xxf:get-request-parameter($parameter-name)"/>
@@ -79,7 +79,7 @@
             <xf:setvalue if="$is-new-id" ref="$document-element" value="digest(string(random(true)), 'MD5', 'hex')"/>
 
             <!-- Case of 'new' mode where we load the initial data via a service -->
-            <xf:var name="new-from-service" value="$mode = ('new', 'test') and xxf:property(string-join(('oxf.fr.detail.new.service.enable', $app, $form), '.'))"/>
+            <xf:var name="new-from-service" value="$mode = ('new', 'test') and xxf:property(string-join(('oxf.fr.detail.new.service.enable', $app, $form, $document), '.'))"/>
             <xf:action if="$new-from-service">
                 <xf:message level="xxf:log-debug">Loading new data from service</xf:message>
                 <xf:send submission="fr-get-instance-from-service"/>
