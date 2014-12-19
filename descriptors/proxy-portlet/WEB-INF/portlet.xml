@@ -3,13 +3,13 @@
 
     <!-- Orbeon Forms proxy portlet (to access a remote Form Runner instance) -->
     <portlet>
-        <portlet-name>orbeon-forms-proxy-portlet</portlet-name>
+        <portlet-name>orbeonpe-forms-proxy-portlet</portlet-name>
         <portlet-class>org.orbeon.oxf.portlet.OrbeonProxyPortlet</portlet-class>
 
         <!-- Basic configuration -->
         <init-param>
             <name>form-runner-url</name>
-            <value>http://localhost:8080/orbeon/</value>
+            <value></value>
         </init-param>
         <init-param>
             <name>enable-url-parameters</name>
@@ -17,11 +17,11 @@
         </init-param>
         <init-param>
             <name>app-name</name>
-            <value>orbeon</value>
+            <value></value>
         </init-param>
         <init-param>
             <name>form-name</name>
-            <value>bookshelf</value>
+            <value></value>
         </init-param>
         <init-param>
             <name>action</name>
@@ -113,7 +113,7 @@
         </supports>
 
         <portlet-info>
-            <title>Form Runner</title>
+            <title>Form Runner PE</title>
         </portlet-info>
         
     </portlet>

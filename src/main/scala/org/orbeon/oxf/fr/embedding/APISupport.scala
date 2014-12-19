@@ -17,6 +17,7 @@ import java.io.Writer
 import java.{util ⇒ ju}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
+import com.liferay.portal.kernel.util.PropsUtil
 import org.apache.commons.io.IOUtils
 import org.apache.http.client.CookieStore
 import org.apache.http.impl.client.BasicCookieStore
@@ -40,7 +41,10 @@ object APISupport {
 
     val AllModes       = List(New, Edit, View)
     val AllModesByName = AllModes map (a ⇒ a.name → a) toMap
-    
+
+    private def baseUrl() =
+        PropsUtil.get("orbeon-pe.form.runner.url")
+
     def proxyPage(
         baseURL     : String,
         path        : String,
@@ -49,7 +53,7 @@ object APISupport {
         implicit ctx: EmbeddingContextWithResponse
     ): Unit = {
 
-        val url  = formRunnerURL(baseURL, path, embeddable = true)
+        val url  = formRunnerURL(baseUrl(), path, embeddable = true)
 
         callService(RequestDetails(None, url, headers, params)) match {
             case content: StreamedContent ⇒
@@ -75,7 +79,7 @@ object APISupport {
                 settings.httpClient
             )
 
-            val url = formRunnerURL(settings.formRunnerURL, resourcePath, embeddable = false)
+            val url = formRunnerURL(baseUrl(), resourcePath, embeddable = false)
 
             val contentFromRequest =
                 req.getMethod == "POST" option

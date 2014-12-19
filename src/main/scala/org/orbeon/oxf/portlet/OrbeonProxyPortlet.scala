@@ -16,7 +16,7 @@ package org.orbeon.oxf.portlet
 import java.net.URLEncoder
 import javax.portlet._
 
-import com.liferay.portal.kernel.util.WebKeys
+import com.liferay.portal.kernel.util.{PropsUtil, WebKeys}
 import com.liferay.portal.kernel.workflow.{WorkflowInstance, WorkflowInstanceManagerUtil, WorkflowTask, WorkflowTaskManagerUtil}
 import com.liferay.portal.model.Layout
 import com.liferay.portal.theme.ThemeDisplay
@@ -144,7 +144,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                     settings.httpClient
                 )
                 val resourceId = request.getResourceID
-                val url = APISupport.formRunnerURL(getPreference(request, FormRunnerURL), resourceId, embeddable = false)
+                val url = APISupport.formRunnerURL(baseUrl, resourceId, embeddable = false)
 
                 val requestDetails =
                     newRequestDetails(
@@ -205,7 +205,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             settings,
             request,
             contentFromRequest(request, namespace),
-            APISupport.formRunnerURL(getPreference(request, FormRunnerURL), path, embeddable = true)
+            APISupport.formRunnerURL(baseUrl, path, embeddable = true)
         )
     }
 
@@ -493,6 +493,8 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         }
         worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname)
     }
+    private def baseUrl() =
+        PropsUtil.get("orbeon-pe.form.runner.url")
 }
 
 object OrbeonProxyPortlet {

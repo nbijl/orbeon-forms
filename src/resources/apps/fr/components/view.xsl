@@ -36,7 +36,7 @@
         <fr:navbar/>
 
         <!--<fr:description/>-->
-        <xxf:variable name="errorcount" as="xs:string" model="fr-error-summary-model"
+        <xf:variable name="errorcount" as="xs:string" model="fr-error-summary-model"
               select="for $c in visible-errors-count return
                   if ($c castable as xs:integer and xs:integer($c) > 0) then '' else 'no-errors'"/>
 
@@ -46,7 +46,7 @@
                 <xh:div class="orb-error"></xh:div>
                 <fr:buttons-bar/>
 
-                <xsl:if test="$error-summary-top">
+                <!--<xsl:if test="$error-summary-top">-->
                     <!-- added error summuary -->
                     <xh:div class="fr-custom-error">
                         <xh:div class="fr-error-count">
@@ -60,7 +60,19 @@
                             <fr:error-summary position="top"/>
                         </xh:div>
                     </xh:div>
-                </xsl:if>
+                <!--<xh:div class="fr-custom-error">
+                    <xh:div class="fr-error-count">
+                        <xf:group model="fr-error-summary-model" ref=".[valid = false() and visible-errors-count gt 0]">
+                            <xf:output value="visible-errors-count"/> fields remaining for validation
+                        </xf:group>
+                    </xh:div>
+                    <xh:div class="fr-error-display">
+                        <xh:div class="arrow-up"></xh:div>
+                        <xh:div class="arrow-up-border"></xh:div>
+                        <fr:error-summary position="top"/>
+                    </xh:div>
+                </xh:div>-->
+                <!--</xsl:if>-->
             </xh:div>
         </xh:div>
 
