@@ -1,0 +1,464 @@
+@media print { 
+
+  html body form.xforms-initially-hidden {
+    display: block;
+  }
+  style {
+    display: none;
+  }
+  noscript {
+    display: none;
+  }
+
+  .orbeon #xforms-form .fr-status-icons,
+  .orbeon #xforms-form .xforms-loading-loading,
+  .orbeon #xforms-form .xforms-upload-remove,
+  .orbeon #xforms-form .xbl-fr-attachment .xforms-output-appearance-xxforms-download,
+  .orbeon #xforms-form .xforms-help-image,
+  .orbeon #xforms-form .fr-section-title .xforms-help-image,
+  .orbeon #xforms-form .xforms-hint,
+  .orbeon #xforms-form .fr-buttons {
+    display: none;
+  }
+  .orbeon #xforms-form .xforms-upload-info {
+    background: transparent none repeat scroll 0 0;
+    padding-left: 2px;
+  }
+  .orbeon #xforms-form select[multiple],
+  .orbeon #xforms-form .xforms-select1-appearance-compact select,
+  .orbeon #xforms-form .xforms-select-appearance-compact select {
+    height: auto;
+  }
+  .orbeon #xforms-form .clearfix:before,
+  .orbeon #xforms-form .clearfix:after,
+  .orbeon #xforms-form .row:before,
+  .orbeon #xforms-form .row:after,
+  .orbeon #xforms-form .row-fluid:before,
+  .orbeon #xforms-form .row-fluid:after,
+  .orbeon #xforms-form .container:before,
+  .orbeon #xforms-form .container:after,
+  .orbeon #xforms-form .container-fluid:before,
+  .orbeon #xforms-form .container-fluid:after,
+  .orbeon #xforms-form .dl-horizontal:before,
+  .orbeon #xforms-form .dl-horizontal:after,
+  .orbeon #xforms-form .controls-row:before,
+  .orbeon #xforms-form .controls-row:after,
+  .orbeon #xforms-form .form-actions:before,
+  .orbeon #xforms-form .form-actions:after,
+  .orbeon #xforms-form .form-horizontal .control-group:before,
+  .orbeon #xforms-form .form-horizontal .control-group:after,
+  .orbeon #xforms-form .nav-tabs:before,
+  .orbeon #xforms-form .nav-pills:before,
+  .orbeon #xforms-form .nav-tabs:after,
+  .orbeon #xforms-form .nav-pills:after,
+  .orbeon #xforms-form .tabbable:before,
+  .orbeon #xforms-form .tabbable:after,
+  .orbeon #xforms-form .navbar-inner:before,
+  .orbeon #xforms-form .navbar-inner:after,
+  .orbeon #xforms-form .navbar-form:before,
+  .orbeon #xforms-form .navbar-form:after,
+  .orbeon #xforms-form .pager:before,
+  .orbeon #xforms-form .pager:after,
+  .orbeon #xforms-form .modal-footer:before,
+  .orbeon #xforms-form .modal-footer:after,
+  .orbeon #xforms-form .thumbnails:before,
+  .orbeon #xforms-form .thumbnails:after,
+  .orbeon #xforms-form .navbar-inner:before,
+  .orbeon #xforms-form .navbar-inner:after {
+    display: block;
+  }
+  .orbeon #xforms-form .input-append,
+  .orbeon #xforms-form .input-prepend,
+  .orbeon #xforms-form .btn-group,
+  .orbeon #xforms-form .btn-toolbar {
+    font-size: .5px;
+  }
+  
+    html {
+    font-family: "Arial Unicode MS";
+  }
+  html,
+  html body.orbeon {
+    background-color: white;
+    background-image: none;
+  }
+  html body.orbeon {
+    padding-top: 0;
+    line-height: 1.5;
+  }
+  .orbeon a,
+  .orbeon button.btn-link {
+    color: black;
+    text-decoration: none;
+  }
+  .orbeon .xforms-required label {
+    background-image: none;
+    padding-left: 0;
+  }
+  .orbeon .container {
+    width: 100%;
+  }
+  .orbeon .fr-body {
+    border: none;
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+  }
+  .page-break-after {
+         page-break-after:always;
+  }
+
+  .page-break-before,
+  .orb-main-body > .xbl-fr-section + .xbl-fr-section > .xforms-group > h2.fr-section-title {
+     page-break-before:always;
+  }
+
+  .orb-main-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > .xforms-group > h2.fr-section-title {
+      page-break-before: auto;
+  }
+  .orbeon h2 {
+    padding:5px 0;
+    font-size: 30px;
+    font-weight: lighter;
+    margin: 5px 0;
+  }
+  .orbeon .fr-section-content h2.fr-section-title{
+    font-size: 20px;
+    color:666;
+    border-bottom: 1px solid #000;
+    margin-bottom:15px;
+    font-weight: normal;
+    /*border-bottom: none;*/
+
+  }
+  .orbeon .xbl-fr-section .fr-section-title {
+    background: none;
+  }
+  .orbeon .xbl-fr-section .fr-section-title .fr-section-label {
+    padding-left: 0;
+  }
+  .orbeon .xbl-fr-section .fr-section-title .fr-section-label.fr-section-open,
+  .orbeon .xbl-fr-section .fr-section-title .fr-section-label.fr-section-closed {
+    background-image: none;
+  }
+  .orbeon .xbl-fr-section .fr-section-title .fr-section-label a {
+    color: black;
+  }
+  .orbeon .navbar,
+  .orbeon .navbar.navbar-inverse {
+    position: static;
+  }
+  .orbeon .navbar .navbar-inner,
+  .orbeon .navbar.navbar-inverse .navbar-inner {
+    background-color: white;
+    /*border-bottom: 1px solid #e3e3e3;*/
+    padding-left: 0;
+  }
+  .orbeon .navbar .navbar-inner .container h1,
+  .orbeon .navbar.navbar-inverse .navbar-inner .container h1 {
+    font-size: 24px;
+    color: black;
+  }
+  .orbeon .navbar .navbar-inner .fr-language-choice,
+  .orbeon .navbar.navbar-inverse .navbar-inner .fr-language-choice {
+    display: none;
+  }
+  .orbeon .navbar .navbar-inner .brand,
+  .orbeon .navbar.navbar-inverse .navbar-inner .brand {
+    color: #555555;
+    font-size: 25px;
+  }
+  .orbeon .fr-form-description {
+    display: none;
+  }
+
+  /*-------------------- worthit --------- */
+
+  .orbeon #xforms-form .xforms-disabled {
+    display: none;
+  }
+  .orbeon #xforms-form table {
+        border:0;
+    border-spacing: 0;
+    border-collapse: collapse;
+  }
+
+[data-id="lastChangeDate"] {
+  display: none;
+}
+  .orbeon #xforms-form .xforms-output .xforms-label{
+    font-weight:normal;
+    white-space: normal;
+    display: block;
+    width: 950px;
+    padding-bottom:10px;
+  }
+
+  .orbeon #xforms-form .fr-grid-content .xforms-control[data-id] span[class=""],
+  .orbeon #xforms-form .fr-grid-content .xbl-fr-currency .xforms-output-output,
+  .orbeon #xforms-form .fr-grid-content .xbl-fr-number .xforms-output-output,
+  .orbeon #xforms-form .fr-grid-content .text-field .xforms-output-output {
+        float:left;
+        width:650px;
+        padding: 0 10px;
+        background: #dddddd;
+        margin-bottom:5px;
+        line-height: 2.5;
+        min-height: 45px;
+  }
+
+
+  .orbeon #xforms-form .xforms-input .xforms-label,
+  .orbeon #xforms-form .xforms-select .xforms-label,
+  .orbeon #xforms-form .xforms-select1-appearance-minimal .xforms-label,
+  .orbeon #xforms-form .xforms-select-appearance-minimal .xforms-label,
+  .orbeon #xforms-form .xforms-select1-appearance-full .xforms-label,
+  .orbeon #xforms-form .xbl-fr-prefilled .xforms-label,
+  .orbeon #xforms-form .xbl-fr-databound-check .xforms-label,
+  .orbeon #xforms-form .xbl-fr-number .xforms-label,
+  .orbeon #xforms-form .xbl-fr-currency .xforms-label,
+   .orbeon #xforms-form .xbl-fr-attachment .xforms-label,
+   .orbeon #xforms-form .xbl-fr-videoupload .xforms-label,
+   .orbeon #xforms-form .multi-column-2 .xforms-output .xforms-label,
+   .orbeon #xforms-form .text-field .xforms-label{
+    font-weight:bold;
+    margin-right:10px;
+    margin-bottom:5px;
+    width:255px;
+    float:left;
+    margin-left:30px;
+     text-align: right;
+    padding-top:10px;
+
+  }
+
+
+  .orbeon #xforms-form .xbl-fr-textcount .xforms-label,
+  .orbeon #xforms-form .xforms-textarea .xforms-label {
+    font-weight:bold;
+  }  
+
+
+
+    .orbeon #xforms-form {
+    font-size:9pt;
+    font-family:arial,helvetica,sans-serif;
+  }
+
+  .orbeon textarea, 
+  .orbeon pre {
+    background: #dddddd;
+    padding:10px;
+    font-family:arial,helvetica,sans-serif !important;
+    white-space: pre-line;
+    width:945px;
+            min-height: 25px;
+    word-wrap:break-word;
+  }
+
+
+    .orbeon #xforms-form .fr-toc,
+    .orbeon #xforms-form .xforms-help-image,
+     .orbeon .xbl-fr-textcount table{
+    display:none;
+  }
+  .orbeon .xforms-alert-active {
+    background: none;
+  }
+
+     .fr-custom-error {display:none;}
+
+/* multicolumn grid
+=============================*/
+
+  .orbeon #xforms-form .multi-column-grid  .xforms-output .xforms-label,
+    .orbeon #xforms-form .multi-column-2 .xforms-label{
+    display: inline;
+    width: auto;
+  }
+
+
+  .orbeon #xforms-form .multi-column-grid .xforms-input .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xforms-select .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xforms-select1-appearance-minimal .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xforms-select-appearance-minimal .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xforms-select1-appearance-full .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-prefilled .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-databound-check .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-number .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-currency .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xforms-input .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xforms-select .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xforms-select1-appearance-minimal .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xforms-select-appearance-minimal .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xforms-select1-appearance-full .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xbl-fr-prefilled .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xbl-fr-databound-check .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xbl-fr-number .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xbl-fr-currency .xforms-label{
+    font-weight:normal;
+    margin:0;    
+    width:auto;
+    float:none;
+    text-align: left;
+    padding:0;
+    line-height: 1;
+
+  }
+
+  .orbeon #xforms-form  .multi-column-grid  .xforms-control[data-id] span[class=""],
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-currency .xforms-output-output,
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-number .xforms-output-output,
+  .orbeon #xforms-form  .tsbsection-section-9-s9_budget-control .multi-column-2  .xforms-control[data-id] span[class=""],
+  .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 .xbl-fr-currency .xforms-output-output,
+  .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 .xbl-fr-number .xforms-output-output {
+    float:none;
+    text-align: left;
+    background: none;
+    padding:0;
+    margin:0;
+    width:auto;
+        line-height: 1;
+
+  }
+  .orbeon #xforms-form  table.multi-column-grid,
+  .orbeon #xforms-form  .multi-column-2 {
+    width:1000px;
+    float:none;
+    margin:15px 0;
+  }
+    .orbeon #xforms-form  table.multi-column-grid td,
+    .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 td{
+    border-right:1px solid #000;
+    border-bottom:1px solid #333;
+    max-width: 80%;
+    vertical-align: top;
+    padding: 0 3px;
+        text-align: right;
+     padding: 0 10px;
+  }
+
+  .orbeon #xforms-form  .multi-column-grid   textarea, 
+  .orbeon #xforms-form  .multi-column-grid  pre,
+  .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 textarea,
+  .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 pre {
+      float:none;
+      width: auto;
+      background: none;
+      padding:0px;
+  }
+
+     /* 
+     Company Partner Accounts table 
+    ================================
+     */ 
+  .orbeon #xforms-form  .tsbsection-s10_sectionCompanyPartnerAccountsTable-control .xbl-fr-grid {
+    padding:30px 0 10px;
+  }
+
+
+
+  .orbeon #xforms-form  .tsbsection-s10_sectionCompanyPartnerAccountsTable-control .multi-column-grid td {
+    border-right:1px solid #000;
+    border-bottom:1px solid #333;
+    line-height: 1.2;
+
+     vertical-align: middle;
+
+  }
+    .orbeon #xforms-form  .tsbsection-s10_sectionCompanyPartnerAccountsTable-control .multi-column-grid .xforms-control[data-id] span[class=""],
+    .orbeon  #xforms-form .tsbsection-s10_sectionCompanyPartnerAccountsTable-control .multi-column-grid .xforms-output-output {
+    line-height: 1;
+  }
+
+  .orbeon #xforms-form  .tsbsection-s10_sectionCompanyPartnerAccountsTable-control .multi-column-grid  .xforms-label{
+    display: inline-block;
+    padding:5px 0;
+    font-weight: bold;
+  }
+
+  /* ------------ footer ---*/
+
+
+/* PDF footer */
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control h2{
+      display: none;
+   }
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control .fr-grid-content [data-id] span[class=""] {
+      background: #fff;
+      float:none;
+      line-height: 1;
+   }
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control .fr-grid-content [data-id] .xforms-label,
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control .fr-grid-content .xforms-output .xforms-label{
+      float:none;
+      text-align: left;
+      margin: 0;
+      padding:0;
+      font-size:14px;
+      line-height: 1;
+      width:auto;
+      display: inline;
+      height: auto;
+      font-weight: bold;
+  }
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control .fr-grid-content [data-id] .xforms-label:after,
+    .orbeon #xforms-form .tsbsection-sectionCompInfo-control .fr-grid-content  .xforms-output .xforms-label:after  {
+      content:":";
+        margin-right:2px;
+
+  }
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr td .fr-grid-content [data-id],
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr td  .fr-grid-content .xforms-output {
+      display: inline;
+      font-size:14px;
+      position: running(field1); 
+   }
+   /* it would be totally awesome if we could just use the :nth-child() selector but nope it's not supported so we get this pyramid from hell :( */
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr > td + td  .fr-grid-content [data-id],
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr > td + td  .fr-grid-content .xforms-output {
+      position: running(field2); 
+  }
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr + tr > td .fr-grid-content [data-id],
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr + tr > td .fr-grid-content .xforms-output {
+      position: running(field3); 
+  }
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr + tr > td + td  .fr-grid-content [data-id],
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr + tr > td + td .fr-grid-content .xforms-output {
+      position: running(field4); 
+  }
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr + tr + tr > td   .fr-grid-content [data-id],
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr + tr + tr > td .fr-grid-content  .xforms-output {
+      position: running(field5); 
+  }
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr + tr + tr > td + td .fr-grid-content [data-id],
+  .orbeon #xforms-form .tsbsection-sectionCompInfo-control tr + tr + tr > td + td .fr-grid-content  .xforms-output  {
+      position: running(field6); 
+  }
+
+}
+@page {
+
+  margin:5% 5% 10%;
+
+ @bottom-left { 
+    border-top:1px double #000;
+    content: element(field1)+element(field3)+element(field5)+element(field7);
+    vertical-align: top;
+    padding-top:15px;
+    padding-right:10px;
+    padding-bottom:50px;
+    width:60%;
+}
+@bottom-right {
+    content: element(field2)+element(field4)+element(field6)+element(field8)+"Page "+counter(page);
+    vertical-align: top;
+    padding-top:15px;
+    padding-bottom:50px;
+    border-top:1px double #000;
+    width: 40%;
+
+}
+
+
+}
