@@ -38,7 +38,7 @@ object Version {
     private val PossibleEditions = Set("CE", "PE")
 
     val VersionNumber = "4.7.0.pre.201412091549"
-    val Edition       = Option("CE") filter PossibleEditions getOrElse "CE"
+    val Edition       = Option("PE") filter PossibleEditions getOrElse "CE"
     val VersionString = "Orbeon Forms with WORTH modifications " + VersionNumber + ' ' + Edition
 
     def versionStringIfAllowed =
