@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    This file is an empty template for your own properties-local.xml file. Please follow the instructions here:
+    http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties
+-->
+<properties xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+   <!-- configure your connect api and orbeon installation location here  -->
+
+        <xsl:variable name="liferay.url" >http://projectsinnovateukorg:8080</xsl:variable>
+        <property as="xs:string" name="orbeon.url" value="<%= node[:orbeon][:orbeonurl] %>:8080/orbeon"/>
+        <property as="xs:string" name="exist.url" value="http://orbeon:<%= @orbeonpassword %>@<%= node[:orbeon][:existurl] %>:8080/exist"/>
+        <property as="xs:anyURI" name="oxf.fr.persistence.exist.exist-uri" value="http://orbeon:<%= @orbeonpassword %>@<%= node[:orbeon][:existurl] %>:8080/exist/rest/db/orbeon/fr"/>
+        <property as="xs:string" name="api.url" value="api.<%= @suffix %>"/>
+
+</properties>
