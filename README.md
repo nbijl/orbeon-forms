@@ -1,6 +1,16 @@
 Orbeon Forms - Open source web forms done the right way
 =======================================================
 
+Worth Diff
+----------
+
+Add tsb-competitions-portlet-*.jar to the lib folder.
+
+
+
+
+
+
 Last updated for Orbeon Forms 4.7 September 2014
 
 [![Build Status](https://secure.travis-ci.org/orbeon/orbeon-forms.png)](https://travis-ci.org/orbeon/orbeon-forms)
