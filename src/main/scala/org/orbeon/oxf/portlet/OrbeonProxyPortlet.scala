@@ -19,11 +19,12 @@ import javax.portlet._
 import com.liferay.portal.kernel.util.{PropsUtil, WebKeys}
 import com.liferay.portal.kernel.workflow.{WorkflowInstance, WorkflowInstanceManagerUtil, WorkflowTask, WorkflowTaskManagerUtil}
 import com.liferay.portal.model.Layout
+import com.liferay.portal.service.ServiceContext
 import com.liferay.portal.theme.ThemeDisplay
 import com.liferay.portal.util.PortalUtil
-import com.worthit.tsb.model.{Application, Competition, WorkflowFormDefinition, WorkflowFormInstance}
-import com.worthit.tsb.service.{ApplicationLocalServiceUtil, CompetitionLocalServiceUtil, NavigationSupportLocalServiceUtil, RoleMapperLocalServiceUtil, WorkflowFormDefinitionLocalServiceUtil, WorkflowFormInstanceLocalServiceUtil, WorkflowStatusMapperLocalServiceUtil}
-import com.worthit.tsb.workflow.WorkflowUtils
+import com.worthit.tsb.model.{Application, Competition, WorkflowFormDefinition, WorkflowFormInstance, FormConfiguration}
+import com.worthit.tsb.service._
+import com.worthit.tsb.service.simulfy.Support;
 import org.orbeon.errorified.Exceptions
 import org.orbeon.exception.OrbeonFormatter
 import org.orbeon.oxf.externalcontext.WSRPURLRewriter
@@ -289,8 +290,8 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
         // show edit view when (user is owner or collaborator) AND (simulfyIsDisabled or thisBrowserIsSupported)
         // OR it's a subform task on the main workflow owned by the current user
-        val simulfyEnabled = WorkflowUtils.isSimulfyEnabledForThisRequest(worthRequest.request)
-        if ((worthRequest.userId.equals(worthRequest.assigneeId) && !simulfyEnabled) || (simulfyEnabled && WorkflowUtils.isBrowserSupportedForSimulfy(request))) {
+        val simulfyEnabled = Support.isSimulfyEnabledForThisRequest(worthRequest.request)
+        if ((worthRequest.userId.equals(worthRequest.assigneeId) && !simulfyEnabled) || (simulfyEnabled && Support.isBrowserSupportedForSimulfy(request))) {
             // TODO: move this logic to the service layer and reuse in SubmitApplication
 
             if (!worthRequest.wfFormDefinition.isDefined) {
@@ -347,7 +348,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
     private def getWorthApplicationDocumentId(request: PortletRequest) : String = {
         var scopeGroupId = PortalUtil.getScopeGroupId(request)
-        var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId).get(0)
+        var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId)
         APISupport.Logger.info("application id  " + application.getApplicationId.toString)
         //Option(application.getApplicationId.toString)
         var docId = application.getApplicationId.toString
@@ -369,7 +370,8 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var formName = getPreferenceOrRequested(request, FormName)
 
         // if the proxy portlet has no appName and formName, then use the competition appName/formName
-        if (appName == ""){
+        // or from the form configuration
+        if (appName == "") {
             appName = worthRequest.competition.get.getOrbeonAppName
         }
 
@@ -377,6 +379,17 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             formName = worthRequest.competition.get.getOrbeonFormName
         }
 
+        if(worthRequest.competition.get.isPhasesEnabled) {
+            APISupport.Logger.info("phase is enabled")
+            var serviceContext = worthRequest.wfInstance.getWorkflowContext.get("serviceContext").asInstanceOf[ServiceContext]
+            var contextFormConfiguration = serviceContext.getAttribute("formConfigurationId").toString
+            APISupport.Logger.info("phase is enabled id: " + contextFormConfiguration)
+            var formConfigurationId = contextFormConfiguration.toLong
+            var formConfiguration = FormConfigurationLocalServiceUtil.getFormConfiguration(formConfigurationId);
+            APISupport.Logger.info("phase is enabled id: " + formConfiguration.getOrbeonAppName + " " + formConfiguration.getOrbeonFormName)
+            appName = formConfiguration.getOrbeonAppName
+            formName = formConfiguration.getOrbeonFormName
+        }
 
         if(worthRequest.wfFormInstance.isDefined){
             // for subforms.
@@ -430,7 +443,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var returnUrl: Option[String] = None
 
         var scopeGroupId = PortalUtil.getScopeGroupId(request)
-        var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId).get(0)
+        var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId)
 
         if (application != null){
             competition = Option(CompetitionLocalServiceUtil.getCompetition(application.getCompetitionId))
