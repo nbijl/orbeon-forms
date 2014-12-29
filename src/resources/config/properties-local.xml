@@ -18,61 +18,61 @@
     http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties
 -->
 <properties xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-   <xi:include href="properties-local-env.xml"></xi:include>
-   <!-- Orbeon heartbeat -->
-   <property as="xs:boolean" name="oxf.xforms.session-heartbeat" value="true" />
-   <property as="xs:integer" name="oxf.xforms.session-heartbeat-delay" value="35000" />
+    <xi:include href="properties-local-env.xml"></xi:include>
+    <!-- Orbeon heartbeat -->
+    <property as="xs:boolean" name="oxf.xforms.session-heartbeat" value="true" />
+    <property as="xs:integer" name="oxf.xforms.session-heartbeat-delay" value="35000" />
 
-   <!-- Include table of contents -->
-   <property as="xs:integer" name="oxf.fr.detail.toc.*.*" value="1" />
+    <!-- Include table of contents -->
+    <property as="xs:integer" name="oxf.fr.detail.toc.*.*" value="1" />
 
-   <!-- Show errors on top of the form -->
-   <!--<property as="xs:string" name="oxf.fr.detail.error-summary.*.*" value="top" />-->
+    <!-- Show errors on top of the form -->
+    <!--<property as="xs:string" name="oxf.fr.detail.error-summary.*.*" value="top" />-->
 
-   <!-- Include the right currency -->
-   <property as="xs:string" name="oxf.xforms.xbl.fr.currency.prefix" value="£" />
+    <!-- Include the right currency -->
+    <property as="xs:string" name="oxf.xforms.xbl.fr.currency.prefix" value="£" />
 
-   <!-- format date for UK -->
-   <property as="xs:string" name="oxf.xforms.format.input.date" value="[D]/[M]/[Y]" />
-   <property as="xs:string" name="oxf.xforms.format.input.time" value="[h]:[m]:[s] [P]" />
+    <!-- format date for UK -->
+    <property as="xs:string" name="oxf.xforms.format.input.date" value="[D]/[M]/[Y]" />
+    <property as="xs:string" name="oxf.xforms.format.input.time" value="[h]:[m]:[s] [P]" />
 
-   <!-- Don't show version info -->
+    <!-- Don't show version info -->
 
-   <property as="xs:boolean" name="oxf.fr.version.*.*" value="false" />
-   
-   <!-- hide stuff -->
-   <property as="xs:boolean" name="oxf.fr.detail.hide-header.*.*" value="true" />
-   <property as="xs:boolean" name="oxf.fr.detail.hide-footer.*.*" value="false" />
-   <property as="xs:boolean" name="oxf.fr.detail.hide-top.*.*" value="true" />
-   <property as="xs:boolean" name="oxf.fr.detail.hide-logo.*.*" value="true" />
-   <property as="xs:string" name="oxf.fr.css.uri.*.*" value="" >
-     /apps/fr/style/form-runner-wipdf.css
-   </property>
-   <property as="xs:string" name="oxf.fr.css.uri.orbeon.builder" value="
+    <property as="xs:boolean" name="oxf.fr.version.*.*" value="false" />
+
+    <!-- hide stuff -->
+    <property as="xs:boolean" name="oxf.fr.detail.hide-header.*.*" value="true" />
+    <property as="xs:boolean" name="oxf.fr.detail.hide-footer.*.*" value="false" />
+    <property as="xs:boolean" name="oxf.fr.detail.hide-top.*.*" value="true" />
+    <property as="xs:boolean" name="oxf.fr.detail.hide-logo.*.*" value="true" />
+    <property as="xs:string" name="oxf.fr.css.uri.*.*" value="" >
+        /apps/fr/style/form-runner-wipdf.css
+    </property>
+    <property as="xs:string" name="oxf.fr.css.uri.orbeon.builder" value="
     /apps/fr/style/bootstrap/css/bootstrap.css
     /apps/fr/style/form-runner-bootstrap-override.css
     /apps/fr/style/form-runner-base.css                                                          
     /apps/fr/style/form-runner-orbeon.css" />
-   <property as="xs:boolean" name="oxf.fr.detail.noscript.section.collapse.*.*" value="false" />
-   <property as="xs:boolean" name="oxf.fr.detail.ajax.section.collapse.*.*" value="false" />
-   <property as="xs:boolean" name="oxf.fr.detail.ajax.section.animate.*.*" value="false" />
-   
-   <!-- Show the right buttons -->
-   <property as="xs:string" name="oxf.fr.detail.buttons.*.*" value="save-draft pdf submit1 submit2 submit3 submit4 submit5 autosave"/>
-   <!-- <property as="xs:string" name="oxf.fr.detail.buttons.KTP-PE.*" value="save-draft pdf submit-ktp1 submit-ktp2 submit-ktp3 autosave" /> -->
-   <property as="xs:string" name="oxf.fr.detail.buttons.view.*.*" value="pdf" />
+    <property as="xs:boolean" name="oxf.fr.detail.noscript.section.collapse.*.*" value="false" />
+    <property as="xs:boolean" name="oxf.fr.detail.ajax.section.collapse.*.*" value="false" />
+    <property as="xs:boolean" name="oxf.fr.detail.ajax.section.animate.*.*" value="false" />
 
-   
-   <!-- override the save button to also send the form XML to Liferay so we can create a snapshot document -->
+    <!-- Show the right buttons -->
+    <property as="xs:string" name="oxf.fr.detail.buttons.*.*" value="save-draft pdf submit1 submit2 submit3 submit4 submit5 autosave"/>
+    <!-- <property as="xs:string" name="oxf.fr.detail.buttons.KTP-PE.*" value="save-draft pdf submit-ktp1 submit-ktp2 submit-ktp3 autosave" /> -->
+    <property as="xs:string" name="oxf.fr.detail.buttons.view.*.*" value="pdf" />
+
+
+    <!-- override the save button to also send the form XML to Liferay so we can create a snapshot document -->
     <!--
 
 
     -->
-   <property as="xs:string"  name="oxf.fr.detail.process.save-draft.*.*"
-    value='save
+    <property as="xs:string"  name="oxf.fr.detail.process.save-draft.*.*"
+              value='save
             then send(
                 uri = "http://projectsinnovateukorg:8080/delegate/orbeon-save-snapshot/",
-                replace = "none",
+                replace = "all",
                 method = "post",
                 content = "xml",
                 prune = "false"
@@ -80,95 +80,125 @@
            then success-message("save-draft-success")
            recover error-message("database-error")'/>
 
-  <property as="xs:string"  name="oxf.fr.detail.process.autosave.*.*" 
-      value='save
+    <property as="xs:string"  name="oxf.fr.detail.process.autosave.*.*"
+              value='save
             recover error-message("database-error")'/>
-  <property as="xs:string"  name="oxf.fr.detail.process.submit1.*.*" 
-      value='require-valid
-             then save
-             then send("workflow1")
-             recover error-message("database-error")'/>
-
-  <property as="xs:string"  name="oxf.fr.detail.process.submit2.*.*" 
-      value='require-uploads
-             then validate-all
+    <property as="xs:string"  name="oxf.fr.detail.process.submit1.*.*"
+              value='require-valid
              then save 
-             then send("workflow2")
+             then send(
+                uri = "http://projectsinnovateukorg:8080/delegate/orbeon-submit-1/",
+                replace = "all",
+                method = "post",
+                content = "xml",
+                prune = "false"
+            )
              recover error-message("database-error")'/>
 
-  <property as="xs:string"  name="oxf.fr.detail.process.submit3.*.*" 
-      value='require-valid
+    <property as="xs:string"  name="oxf.fr.detail.process.submit2.*.*"
+              value='require-uploads
+             then require-valid
              then save 
-             then send("workflow3")
+             then send(
+                uri = "http://projectsinnovateukorg:8080/delegate/orbeon-submit-2/",
+                replace = "all",
+                method = "post",
+                content = "xml",
+                prune = "false"
+            )
              recover error-message("database-error")'/>
-  <property as="xs:string"  name="oxf.fr.detail.process.submit4.*.*" 
-      value='require-valid
+
+    <property as="xs:string"  name="oxf.fr.detail.process.submit3.*.*"
+              value='require-valid
              then save 
-             then send("workflow4")
+             then send(
+                uri = "http://projectsinnovateukorg:8080/delegate/orbeon-submit-3/",
+                replace = "all",
+                method = "post",
+                content = "xml",
+                prune = "false"
+            )
              recover error-message("database-error")'/>
-
-  <property as="xs:string"  name="oxf.fr.detail.process.submit5.*.*" 
-      value='require-valid
+    <property as="xs:string"  name="oxf.fr.detail.process.submit4.*.*"
+              value='require-valid
              then save 
-             then send("workflow5")
+             then send(
+                uri = "http://projectsinnovateukorg:8080/delegate/orbeon-submit-4/",
+                replace = "all",
+                method = "post",
+                content = "xml",
+                prune = "false"
+            )
              recover error-message("database-error")'/>
-   
-  <property as="xs:string" name="save-snapshot.uri.*.*" >
-      <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-save-snapshot/</xsl:attribute>
-  </property>
-  <property as="xs:string" name="save-snapshot.prune.*.*" value='false' />
-  <property as="xs:string" name="save-snapshot.method.*.*" value='POST' />
-  <property as="xs:string" name="save-snapshot.content.*.*" value='xml' />
-  <property as="xs:string" name="save-snapshot.replace.*.*" value='none' />
-  <property as="xs:boolean" name="save-snapshot.annotate.*.*" value="false"/>
 
-  <property as="xs:string" name="workflow1.uri.*.*">
-    <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-1/</xsl:attribute>
-  </property>
-  <property as="xs:string" name="workflow1.prune.*.*" value='false' />
-  <property as="xs:string" name="workflow1.method.*.*" value='POST' />
-  <property as="xs:string" name="workflow1.content.*.*" value='xml' />
-  <property as="xs:string" name="workflow1.replace.*.*" value='all' />
+    <property as="xs:string"  name="oxf.fr.detail.process.submit5.*.*"
+              value='require-valid
+             then save 
+             then send(
+                uri = "http://projectsinnovateukorg:8080/delegate/orbeon-submit-5/",
+                replace = "all",
+                method = "post",
+                content = "xml",
+                prune = "false"
+            )
+             recover error-message("database-error")'/>
 
-  <property as="xs:string" name="workflow2.uri.*.*">
-    <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-2/</xsl:attribute>
-  </property>
-  <property as="xs:string" name="workflow2.prune.*.*" value='false' />
-  <property as="xs:string" name="workflow2.method.*.*" value='POST' />
-  <property as="xs:string" name="workflow2.content.*.*" value='xml' />
-  <property as="xs:string" name="workflow2.replace.*.*" value='all' />
+    <property as="xs:string" name="save-snapshot.uri.*.*" >
+        <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-save-snapshot/</xsl:attribute>
+    </property>
+    <property as="xs:string" name="save-snapshot.prune.*.*" value='false' />
+    <property as="xs:string" name="save-snapshot.method.*.*" value='post' />
+    <property as="xs:string" name="save-snapshot.content.*.*" value='xml' />
+    <property as="xs:string" name="save-snapshot.replace.*.*" value='none' />
+    <property as="xs:boolean" name="save-snapshot.annotate.*.*" value="false"/>
 
-  <property as="xs:string" name="workflow3.uri.*.*">
-    <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-3/</xsl:attribute>
-  </property>
-  <property as="xs:string" name="workflow3.prune.*.*" value='false' />
-  <property as="xs:string" name="workflow3.method.*.*" value='POST' />
-  <property as="xs:string" name="workflow3.content.*.*" value='xml' />
-  <property as="xs:string" name="workflow3.replace.*.*" value='all' />
+    <property as="xs:string" name="workflow1.uri.*.*">
+        <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-1/</xsl:attribute>
+    </property>
+    <property as="xs:string" name="workflow1.prune.*.*" value='false' />
+    <property as="xs:string" name="workflow1.method.*.*" value='post' />
+    <property as="xs:string" name="workflow1.content.*.*" value='xml' />
+    <property as="xs:string" name="workflow1.replace.*.*" value='all' />
 
-  <property as="xs:string" name="workflow4.uri.*.*">
-    <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-4/</xsl:attribute>
-  </property>
-  <property as="xs:string" name="workflow4.prune.*.*" value='false' />
-  <property as="xs:string" name="workflow4.method.*.*" value='POST' />
-  <property as="xs:string" name="workflow4.content.*.*" value='xml' />
-  <property as="xs:string" name="workflow4.replace.*.*" value='all' />
+    <property as="xs:string" name="workflow2.uri.*.*">
+        <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-2/</xsl:attribute>
+    </property>
+    <property as="xs:string" name="workflow2.prune.*.*" value='false' />
+    <property as="xs:string" name="workflow2.method.*.*" value='post' />
+    <property as="xs:string" name="workflow2.content.*.*" value='xml' />
+    <property as="xs:string" name="workflow2.replace.*.*" value='all' />
 
-  <property as="xs:string" name="workflow5.uri.*.*">
-    <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-5/</xsl:attribute>
-  </property>
-  <property as="xs:string" name="workflow5.prune.*.*" value='false' />
-  <property as="xs:string" name="workflow5.method.*.*" value='POST' />
-  <property as="xs:string" name="workflow5.content.*.*" value='xml' />
-  <property as="xs:string" name="workflow5.replace.*.*" value='all' />
+    <property as="xs:string" name="workflow3.uri.*.*">
+        <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-3/</xsl:attribute>
+    </property>
+    <property as="xs:string" name="workflow3.prune.*.*" value='false' />
+    <property as="xs:string" name="workflow3.method.*.*" value='post' />
+    <property as="xs:string" name="workflow3.content.*.*" value='xml' />
+    <property as="xs:string" name="workflow3.replace.*.*" value='all' />
+
+    <property as="xs:string" name="workflow4.uri.*.*">
+        <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-4/</xsl:attribute>
+    </property>
+    <property as="xs:string" name="workflow4.prune.*.*" value='false' />
+    <property as="xs:string" name="workflow4.method.*.*" value='post' />
+    <property as="xs:string" name="workflow4.content.*.*" value='xml' />
+    <property as="xs:string" name="workflow4.replace.*.*" value='all' />
+
+    <property as="xs:string" name="workflow5.uri.*.*">
+        <xsl:attribute name="value"><xsl:value-of select="$liferay.url" />/delegate/orbeon-submit-5/</xsl:attribute>
+    </property>
+    <property as="xs:string" name="workflow5.prune.*.*" value='false' />
+    <property as="xs:string" name="workflow5.method.*.*" value='post' />
+    <property as="xs:string" name="workflow5.content.*.*" value='xml' />
+    <property as="xs:string" name="workflow5.replace.*.*" value='all' />
 
 
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit1" value="empty1"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit2" value="empty2"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit3" value="empty3"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit4" value="empty4"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit5" value="empty5"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.autosave" value="autosave"/>
+    <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit1" value="empty1"/>
+    <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit2" value="empty2"/>
+    <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit3" value="empty3"/>
+    <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit4" value="empty4"/>
+    <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit5" value="empty5"/>
+    <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.autosave" value="autosave"/>
 
 
 </properties>
