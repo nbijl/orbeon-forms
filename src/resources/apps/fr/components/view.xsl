@@ -37,7 +37,7 @@
 
         <!--<fr:description/>-->
         <xf:variable name="errorcount" as="xs:string" model="fr-error-summary-model"
-              select="for $c in visible-errors-count return
+              select="for $c in visible-counts/@error return
                   if ($c castable as xs:integer and xs:integer($c) > 0) then '' else 'no-errors'"/>
 
         <xh:div class="submitapplication-bar {{$errorcount}}">
@@ -50,7 +50,7 @@
                     <!-- added error summuary -->
                     <xh:div class="fr-custom-error">
                         <xh:div class="fr-error-count">
-                            <xf:group model="fr-error-summary-model" ref=".[valid = false() and visible-errors-count gt 0]">
+                            <xf:group model="fr-error-summary-model" ref=".[valid = false() and visible-counts/@error gt 0]">
                                 <xf:output value="visible-errors-count"/> fields remaining for validation
                             </xf:group>
                         </xh:div>
