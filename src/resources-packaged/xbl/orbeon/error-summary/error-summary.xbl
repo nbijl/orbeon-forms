@@ -354,9 +354,14 @@ Inserting error information into error list:
                                     </xf:label>
                                 </xsl:for-each>
                                 <!-- Anchor for navigation -->
-                                <!-- <xh:a name="fr-errors"/> -->
-                                <xh:ol class="fr-error-list">
+                                <xh:a name="fr-errors"/>
+                                <xh:table class="fr-error-list">
 
+                                    <xh:colgroup>
+                                        <xh:col class="fr-grid-col-1"/>
+                                        <xh:col class="fr-grid-col-2"/>
+                                        <xh:col class="fr-grid-col-3"/>
+                                    </xh:colgroup>
 
                                     <!-- Display global errors -->
                                     <xsl:for-each select="$fr-errors">
@@ -387,14 +392,17 @@ Inserting error information into error list:
                                     <!-- Display control errors -->
                                     <xf:var name="noscript" value="property('xxf:noscript')"/>
                                     <xf:repeat ref="$visible-errors" id="er">
-                                        <xh:li>
+                                        <xh:tr>
                                             <!-- Clickable / linkable label -->
                                             <xf:var name="has-label" value="exists(normalize-space(@label))"/>
                                             <xf:var name="focusable" value="xxf:focusable(@absolute-id)"/>
-<!--                                            <xh:td class="fr-error-number"><xf:output value="position()"/></xh:td> -->
+                                            <xh:td class="fr-error-number"><xf:output value="position()"/></xh:td>
+                                            <xh:td>
                                                 <xf:group ref=".[$has-label]">
                                                     <!-- In noscript mode, use a plain link to the client id -->
+                                                    <xf:group ref=".[$noscript]">
                                                         <xh:a href="#{{xxf:client-id(@absolute-id)}}"><xf:output mediatype="text/html" value="@label" class="fr-error-label"/></xh:a>
+                                                    </xf:group>
                                                     <!-- If the control is not focusable, don't link -->
                                                     <xf:output
                                                         ref=".[not($noscript) and not($focusable)]"
@@ -402,20 +410,22 @@ Inserting error information into error list:
                                                         mediatype="text/html"
                                                         value="@label"/>
                                                     <!-- Otherwise use trigger -->
-                          <!--                           <xf:trigger ref=".[not($noscript) and $focusable]" appearance="minimal" class="fr-error-label">
+                                                    <xf:trigger ref=".[not($noscript) and $focusable]" appearance="minimal" class="fr-error-label">
                                                         <xf:label mediatype="text/html" value="@label"/>
                                                         <xf:setfocus ev:event="DOMActivate" control="{{@absolute-id}}"/>
-                                                    </xf:trigger> -->
+                                                    </xf:trigger>
                                                 </xf:group>
-                                  
+                                            </xh:td>
+                                            <xh:td>
                                                 <xf:output
                                                     class="fr-error-alert fr-error-alert-{{@level}}"
                                                     mediatype="text/html"
                                                     value="@alert"
                                                     id="ao"/>
-                                        </xh:li>
+                                            </xh:td>
+                                        </xh:tr>
                                     </xf:repeat>
-                                </xh:ol>
+                                </xh:table>
                             </xf:group>
 
                             <!-- Include optional footer -->
