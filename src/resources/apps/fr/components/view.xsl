@@ -37,6 +37,7 @@
 
         <!--<fr:description/>-->
         <xf:variable name="errorcount" as="xs:string" model="fr-error-summary-model"
+
               select="for $c in visible-counts/@error return
                   if ($c castable as xs:integer and xs:integer($c) > 0) then '' else 'no-errors'"/>
 
@@ -50,8 +51,8 @@
                     <!-- added error summuary -->
                     <xh:div class="fr-custom-error">
                         <xh:div class="fr-error-count">
-                            <xf:group model="fr-error-summary-model" ref=".[valid = false() and visible-counts/@error gt 0]">
-                                <xf:output value="visible-errors-count"/> fields remaining for validation
+                            <xf:group model="fr-error-summary-model" ref=".[visible-counts/@error gt 0]">
+                                <xf:output value="visible-counts/@error"/> fields remaining for validation
                             </xf:group>
                         </xh:div>
                         <xh:div class="fr-error-display">
@@ -94,12 +95,12 @@
         <!-- Error summary (if at bottom) -->
         <!-- If we configuration tells us the bottom error summary should not be shown, still include it but hide it with 'display: none'.
              This is necessary because the persistence model relies on the error summary to know if the data is valid. -->
-        <xh:div>
+<!--         <xh:div>
             <xsl:if test="not($error-summary-bottom)">
                 <xsl:attribute name="style">display: none</xsl:attribute>
             </xsl:if>
             <fr:error-summary position="bottom"/>
-        </xh:div>
+        </xh:div> -->
 
         <fr:row>
             <fr:noscript-help/>
@@ -107,12 +108,12 @@
         <fr:row>
             <fr:messages/>
         </fr:row>
-        <fr:row>
+<!--         <fr:row>
             <fr:buttons-bar/>
         </fr:row>
         <fr:row>
             <fr:version/>
-        </fr:row>
+        </fr:row> -->
     </xsl:variable>
 
     <xsl:template match="fr:row">
