@@ -17,7 +17,7 @@ import java.net.URLEncoder
 import javax.portlet._
 
 import com.liferay.portal.kernel.util.{PropsUtil, WebKeys}
-import com.liferay.portal.kernel.workflow.{WorkflowInstance, WorkflowInstanceManagerUtil, WorkflowTask, WorkflowTaskManagerUtil}
+import com.liferay.portal.kernel.workflow._
 import com.liferay.portal.model.Layout
 import com.liferay.portal.service.ServiceContext
 import com.liferay.portal.theme.ThemeDisplay
@@ -322,7 +322,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
     private def getWorthApplicationParams(request: PortletRequest, docId: String): String = {
         // Fields to return :
         // roleId, workflowTaskId, serverHostname, applicationTitle, userId, groupId,
-        // workflowId, workflowTaskId, workflowFormInstanceId, token, returnUrl
+        // workflowId, workflowTaskId, workflowFormInstanceId, formConfigurationId, token, returnUrl
 
         var scopeGroupId = PortalUtil.getScopeGroupId(request).toString
         APISupport.Logger.info("scopeGroupId " + scopeGroupId)
@@ -337,6 +337,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                 (worthRequest.wfId map ("&workflowid=" + _) getOrElse "") +
                 (worthRequest.wfTask map ("&workflowtaskid=" + _.getWorkflowTaskId.toString) getOrElse "") +
                 (worthRequest.wfFormInstance map ("&workflowforminstanceid=" + _.getWorkflowFormInstanceId.toString) getOrElse "") +
+                ("&formconfigurationid=" + worthRequest.formConfigurationId.toString) +
                 (worthRequest.token map ("&token=" + _) getOrElse "") +
                 (worthRequest.returnUrl map ("&returnurl=" + _) getOrElse "") +
                 (worthRequest.serverHostname map ("&serverhostname=" + _) getOrElse "") +
@@ -379,23 +380,21 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             formName = worthRequest.competition.get.getOrbeonFormName
         }
 
-        if(worthRequest.competition.get.isPhasesEnabled) {
-            APISupport.Logger.info("phase is enabled")
-            var serviceContext = worthRequest.wfInstance.getWorkflowContext.get("serviceContext").asInstanceOf[ServiceContext]
-            var contextFormConfiguration = serviceContext.getAttribute("formConfigurationId").toString
-            APISupport.Logger.info("phase is enabled id: " + contextFormConfiguration)
-            var formConfigurationId = contextFormConfiguration.toLong
-            var formConfiguration = FormConfigurationLocalServiceUtil.getFormConfiguration(formConfigurationId);
-            APISupport.Logger.info("phase is enabled id: " + formConfiguration.getOrbeonAppName + " " + formConfiguration.getOrbeonFormName)
-            appName = formConfiguration.getOrbeonAppName
-            formName = formConfiguration.getOrbeonFormName
-        }
+        APISupport.Logger.info("phase enabled: " + worthRequest.competition.get.isPhasesEnabled);
+        APISupport.Logger.info("form config id: " + worthRequest.formConfigurationId);
 
         if(worthRequest.wfFormInstance.isDefined){
             // for subforms.
             appName = worthRequest.wfFormInstance.get.getOrbeonAppName()
             formName = worthRequest.wfFormInstance.get.getOrbeonFormName()
         }
+        else if(worthRequest.competition.get.isPhasesEnabled && worthRequest.formConfigurationId!=0L) {
+            var formConfiguration = FormConfigurationLocalServiceUtil.getFormConfiguration(worthRequest.formConfigurationId);
+            APISupport.Logger.info("phase is enabled id: " + formConfiguration.getOrbeonAppName + " " + formConfiguration.getOrbeonFormName)
+            appName = formConfiguration.getOrbeonAppName
+            formName = formConfiguration.getOrbeonFormName
+        }
+
         val docId = getWorthApplicationDocumentId(request)
         val url = APISupport.formRunnerPath(
             appName,
@@ -418,6 +417,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                                            competition: Option[Competition],
                                            wfFormDefinition : Option[WorkflowFormDefinition],
                                            wfFormInstance : Option[WorkflowFormInstance],
+                                           formConfigurationId : Long,
                                            isCurrentlyOverriddenBySubflow : Boolean,
                                            token : Option[String],
                                            returnUrl : Option[String],
@@ -435,6 +435,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var competition : Option[Competition] = None
         var wfFormInstance : Option[WorkflowFormInstance] = None
         var wfFormDefinition: Option[WorkflowFormDefinition] = None
+        var formConfigurationId : Long = 0
         var userId = PortalUtil.getUserId(request).toString
         var owningUserId : Option[Long] = None
         var isCurrentlyOverriddenBySubflow: Boolean = false
@@ -475,23 +476,8 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             primKey = wfFormInstance.get.getWorkflowFormInstanceId
         }
 
-        var wfInstance = WorkflowInstanceManagerUtil.getWorkflowInstances(
-            PortalUtil.getCompanyId(request),
-            application.getUserId,
-            className,
-            primKey,
-            false,
-            0,
-            100,
-            null).get(0)
-        var wfTask  : WorkflowTask = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(
-            PortalUtil.getCompanyId(request),
-            0L,
-            wfInstance.getWorkflowInstanceId(),
-            false,
-            0,
-            10,
-            null).get(0)
+        var wfInstance = CurrentWorkflowTaskLocalServiceUtil.lookupCurrentWorkflowInstance(PortalUtil.getCompanyId(request), application.getUserId, primKey, className)
+        var wfTask  : WorkflowTask = CurrentWorkflowTaskLocalServiceUtil.lookupCurrentTask(PortalUtil.getCompanyId(request), wfInstance)
 
         assigneeId = wfTask.getAssigneeUserId().toString
         APISupport.Logger.debug("roleId = applicant" + userId +" - "+ owningUserId.toString())
@@ -502,10 +488,19 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
         var wfId = Option(WorkflowStatusMapperLocalServiceUtil.fromId(application.getStatus()).toString)
         val wfFormInstanceId = if (!wfFormInstance.isDefined) 0 else wfFormInstance.get.getWorkflowFormInstanceId
+
         token = Option(NavigationSupportLocalServiceUtil.getTokenizedWorkflowIdentifier(
             application.getApplicationId, wfTask.getWorkflowTaskId, wfFormInstanceId))
+
         if(application != null && competition.isDefined){
-            wfFormDefinition = Option(WorkflowFormDefinitionLocalServiceUtil.getFormDefinitionOverridingMainFlow(competition.get.getCompetitionId(), application.getStatus()))
+            if(competition.get.isPhasesEnabled) {
+                val workflowInstance = WorkflowInstanceManagerUtil.getWorkflowInstance(application.getCompanyId, wfTask.getWorkflowInstanceId)
+                val serviceContext = workflowInstance.getWorkflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT).asInstanceOf[ServiceContext]
+                formConfigurationId = serviceContext.getAttribute("formConfigurationId").toString.toLong
+                wfFormDefinition = Option(WorkflowFormDefinitionLocalServiceUtil.getFormDefinitionOverridingMainFlowByFormConfig(formConfigurationId, application.getStatus()))
+            } else {
+                wfFormDefinition = Option(WorkflowFormDefinitionLocalServiceUtil.getFormDefinitionOverridingMainFlow(competition.get.getCompetitionId(), application.getStatus()))
+            }
         }
 
         var serverHostname: Option[String] = Some(request.getServerName() + ":" + request.getServerPort());
@@ -514,7 +509,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         } else {
             serverHostname = Some("http://" + serverHostname.get);
         }
-        worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname)
+        worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, formConfigurationId, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname)
     }
     private def baseUrl() =
         PropsUtil.get("orbeon-pe.form.runner.url")
