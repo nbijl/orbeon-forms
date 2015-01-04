@@ -304,6 +304,8 @@ public abstract class XFormsControlLifecyleHandler extends XFormsBaseHandlerXHTM
         // Add extension attributes in no namespace if possible
         if (xformsControl != null) {
             xformsControl.addExtensionAttributesExceptClassAndAcceptForHandler(newAttributes, "");
+
+            getSimulfyAttributes(uri, xformsControl, localname,newAttributes);
         }
         return newAttributes;
     }
