@@ -331,12 +331,45 @@ public abstract class XFormsControlLifecyleHandler extends XFormsBaseHandlerXHTM
                     String[] ignoreForSimulfy = {"output", "trigger", "section", "grid", "process-button", "href-button", "switch", "error-summary"};
                     if (!Arrays.asList(ignoreForSimulfy).contains(localname)) {
 
-                            /* Certain elements have the real name in the associatedControl.*/
+                        /* Certain elements have the real name in the associatedControl.*/
+                        XFormsControl selectedControlOld = null;
                         if (selectedControl.getId().contains("xf")) {
+                            selectedControlOld = selectedControl;
                             if (selectedControl.container()!=null && selectedControl.container().associatedControl()!=null) {
                                 selectedControl = selectedControl.container().associatedControl();
+
+                                if(selectedControlOld.getChildrenActions().size() == 0 && localname == "input"){
+                                    return;
+                                }
                             }
                         }
+
+                        /*if(selectedControl.getId().contains("s10_latestAssets-control")){
+                            System.out.println("============================= ");
+                            System.out.println("");
+                            System.out.println("selectedControl.getId() " + selectedControl.getId());
+                            System.out.println("selectedControl.getEffectiveId() " + selectedControl.getEffectiveId());
+                            System.out.println("selectedControl.getLabel() " + selectedControl.getLabel());
+                            System.out.println("selectedControl.getChildrenActions().size() " + selectedControl.getChildrenActions().size());
+                            System.out.println("selectedControl.getPrefixedId() " + selectedControl.getPrefixedId());
+                            System.out.println("selectedControl.getAppearances().size() " + selectedControl.getAppearances().size());
+
+                            System.out.println("selectedControlOld.getId() " + selectedControlOld.getId());
+                            System.out.println("selectedControlOld.getEffectiveId() " + selectedControlOld.getEffectiveId());
+                            System.out.println("selectedControlOld.getLabel() " + selectedControlOld.getLabel());
+                            System.out.println("selectedControlOld.getChildrenActions().size() " + selectedControlOld.getChildrenActions().size());
+                            System.out.println("selectedControlOld.getPrefixedId() " + selectedControlOld.getPrefixedId());
+                            System.out.println("selectedControlOld.getAppearances().size() " + selectedControlOld.getAppearances().size());
+
+
+                            for(int i = 0; i < newAttributes.getLength(); i++){
+                                System.out.println("== attr-local-name " + newAttributes.getLocalName(i));
+                                System.out.println("== attr-value " + newAttributes.getValue(i));
+                            }
+
+                            System.out.println("");
+                            System.out.println("============================= ");
+                        }*/
 
                         String parent = "";
                         String fullparent = "";
@@ -371,9 +404,7 @@ public abstract class XFormsControlLifecyleHandler extends XFormsBaseHandlerXHTM
                         } else {
                             newAttributes.addAttribute("","data-id","data-id","data-id",fullparent+selectedControl.getId());
                             newAttributes.addAttribute("","data-section","data-section","data-section",parent);
-
                         }
-
                     }
                 }
             }

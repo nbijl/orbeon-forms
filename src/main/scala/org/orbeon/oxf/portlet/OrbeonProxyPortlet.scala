@@ -283,37 +283,42 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
     private def getWorthViewMode(request: PortletRequest) : String = {
 
         if (!worthRequest.wfTask.isDefined) {
+            APISupport.Logger.info("WF Task is null, so view mode")
             return View.name
         }
 
-        var simulfyBrowserSupported = false
-
-        // show edit view when (user is owner or collaborator) AND (simulfyIsDisabled or thisBrowserIsSupported)
+                // show edit view when (user is owner or collaborator) AND (simulfyIsDisabled or thisBrowserIsSupported)
         // OR it's a subform task on the main workflow owned by the current user
         val simulfyEnabled = Support.isSimulfyEnabledForThisRequest(worthRequest.request)
-        if ((worthRequest.userId.equals(worthRequest.assigneeId) && !simulfyEnabled) || (simulfyEnabled && Support.isBrowserSupportedForSimulfy(request))) {
+        val simulfyBrowserSupported = Support.isBrowserSupportedForSimulfy(request)
+        APISupport.Logger.info("simulfyEnabled  " + simulfyEnabled.toString())
+        APISupport.Logger.info("simulfyBrowserSupported  " + simulfyBrowserSupported.toString())
+
+        if ((worthRequest.userId.equals(worthRequest.assigneeId) && !simulfyEnabled) || (simulfyEnabled && simulfyBrowserSupported)) {
             // TODO: move this logic to the service layer and reuse in SubmitApplication
 
             if (!worthRequest.wfFormDefinition.isDefined) {
-                APISupport.Logger.debug("No workflow form definition")
+                APISupport.Logger.info("No workflow form definition")
             } else {
-                APISupport.Logger.debug("Workflow form definition " + worthRequest.wfFormDefinition.get.getName());
+                APISupport.Logger.info("Workflow form definition " + worthRequest.wfFormDefinition.get.getName());
             }
             if (!worthRequest.wfFormInstance.isDefined) {
-                APISupport.Logger.debug("No workflow form definition")
+                APISupport.Logger.info("No workflow form definition")
             } else {
-                APISupport.Logger.debug("Workflow form instance " + worthRequest.wfFormInstance.get.getName());
+                APISupport.Logger.info("Workflow form instance " + worthRequest.wfFormInstance.get.getName());
             }
             // show main form in view mode when when it wasn't specifically requested
             if ((worthRequest.isCurrentlyOverriddenBySubflow && worthRequest.wfFormInstance == null) ||
                     (worthRequest.wfFormInstance.isDefined && !worthRequest.wfFormDefinition.isDefined && worthRequest.wfFormInstance.get.isOverrideMainFlow()) ||
                     (worthRequest.wfFormInstance.isDefined && worthRequest.wfFormDefinition.isDefined && !worthRequest.wfFormInstance.get.getName().equals(worthRequest.wfFormDefinition.get.getName()))
             ) {
+                APISupport.Logger.info("View mode reason 1")
                 View.name
             } else {
                 Edit.name
             }
         } else {
+            APISupport.Logger.info("View mode reason default")
             View.name
         }
 
@@ -509,6 +514,10 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         } else {
             serverHostname = Some("http://" + serverHostname.get);
         }
+
+        APISupport.Logger.info("assigneeId " + assigneeId);
+        APISupport.Logger.info("userId " + userId);
+
         worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, formConfigurationId, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname)
     }
     private def baseUrl() =
