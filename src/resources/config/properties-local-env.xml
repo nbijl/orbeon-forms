@@ -12,4 +12,12 @@
         <property as="xs:anyURI" name="oxf.fr.persistence.exist.exist-uri" value="http://orbeon:<%= @orbeonpassword %>@<%= node[:orbeon][:existurl] %>:8080/exist/rest/db/orbeon/fr"/>
         <property as="xs:string" name="api.url" value="api.<%= @suffix %>"/>
 
+
+        <property as="xs:string" name="save-snapshot.uri.*.*" value="http://projectsinnovateukorg:8080/delegate/orbeon-save-snapshot/"/>
+        <property as="xs:string" name="workflow1.uri.*.*" value="http://projectsinnovateukorg:8080/delegate/orbeon-submit-1/"/>
+        <property as="xs:string" name="workflow2.uri.*.*" value="http://projectsinnovateukorg:8080/delegate/orbeon-submit-2/"/>
+        <property as="xs:string" name="workflow3.uri.*.*" value="http://projectsinnovateukorg:8080/delegate/orbeon-submit-3/"/>
+        <property as="xs:string" name="workflow4.uri.*.*" value="http://projectsinnovateukorg:8080/delegate/orbeon-submit-4/"/>
+        <property as="xs:string" name="workflow5.uri.*.*" value="http://projectsinnovateukorg:8080/delegate/orbeon-submit-5/"/>
+
 </properties>

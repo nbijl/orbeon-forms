@@ -187,6 +187,10 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             pathParameterOpt getOrElse defaultPath match {
                 case path @ "/xforms-server-submit" ⇒
                     path
+                case path @ "/dont-show-list-with-forms" ⇒
+                    // this will show a "Orbeon Forms - Page Not Found" message.
+                    // (that is what we want when there is not application.)
+                    path
                 // Incoming path is Form Runner path without document id
                 case FormRunnerPath(appName, formName, mode, _, query) ⇒
                     APISupport.formRunnerPath(appName, formName, filterMode(mode), None, Option(query))
@@ -281,7 +285,9 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
 
     private def getWorthViewMode(request: PortletRequest) : String = {
-
+        if(worthRequest == null){
+            return View.name
+        }
         if (!worthRequest.wfTask.isDefined) {
             APISupport.Logger.info("WF Task is null, so view mode")
             return View.name
@@ -355,18 +361,32 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
     private def getWorthApplicationDocumentId(request: PortletRequest) : String = {
         var scopeGroupId = PortalUtil.getScopeGroupId(request)
         var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId)
-        APISupport.Logger.info("application id  " + application.getApplicationId.toString)
-        //Option(application.getApplicationId.toString)
-        var docId = application.getApplicationId.toString
 
-        if (worthRequest.wfFormInstance.isDefined) {
-            // for subforms.
-            docId = WorkflowFormInstanceLocalServiceUtil.getOrbeonDocId(worthRequest.wfFormInstance.get).toString
+        if(application == null){
+            ""
+        }else{
+            APISupport.Logger.info("application id  " + application.getApplicationId.toString)
+            //Option(application.getApplicationId.toString)
+            var docId = application.getApplicationId.toString
+
+            if (worthRequest.wfFormInstance.isDefined) {
+                // for subforms.
+                docId = WorkflowFormInstanceLocalServiceUtil.getOrbeonDocId(worthRequest.wfFormInstance.get).toString
+            }
+
+            docId
+        }
+    }
+    private def getWorthFormRunnerPath(request: PortletRequest): String = {
+        if(request == null){
+            APISupport.Logger.info("No request found, so return formRunnerHomePath ")
+            return "/dont-show-list-with-forms"
+        }
+        if(worthRequest == null){
+            APISupport.Logger.info("worthRequest is null, so return formRunnerHomePath ")
+            return "/dont-show-list-with-forms"
         }
 
-        docId
-    }
-    private def getWorthFormRunnerPath(request: PortletRequest) = {
         APISupport.Logger.info("DocumentId " + getWorthApplicationDocumentId(request))
         APISupport.Logger.info("DocumentId " + getPreferenceOrRequested(request, DocumentId))
         APISupport.Logger.info("page  " + getPreferenceOrRequested(request, Page).toString)
@@ -377,11 +397,11 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
         // if the proxy portlet has no appName and formName, then use the competition appName/formName
         // or from the form configuration
-        if (appName == "") {
+        if (appName == "" && worthRequest.competition.isDefined) {
             appName = worthRequest.competition.get.getOrbeonAppName
         }
 
-        if(formName == ""){
+        if(formName == "" && worthRequest.competition.isDefined){
             formName = worthRequest.competition.get.getOrbeonFormName
         }
 
@@ -393,7 +413,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             appName = worthRequest.wfFormInstance.get.getOrbeonAppName()
             formName = worthRequest.wfFormInstance.get.getOrbeonFormName()
         }
-        else if(worthRequest.competition.get.isPhasesEnabled && worthRequest.formConfigurationId!=0L) {
+        else if(worthRequest.competition.isDefined && worthRequest.competition.get.isPhasesEnabled && worthRequest.formConfigurationId!=0L) {
             var formConfiguration = FormConfigurationLocalServiceUtil.getFormConfiguration(worthRequest.formConfigurationId);
             APISupport.Logger.info("phase is enabled id: " + formConfiguration.getOrbeonAppName + " " + formConfiguration.getOrbeonFormName)
             appName = formConfiguration.getOrbeonAppName
@@ -431,7 +451,10 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
                                            )
     private var worthRequest : WorthRequest = null
-    def initWorthRequest(request: PortletRequest) = {
+    def initWorthRequest(request: PortletRequest): Any = {
+        if(request == null){
+            return;
+        }
         //        var worthRequest :WorthRequest
         var className = classOf[Application].getName
         var primKey: Long = 0
@@ -451,16 +474,18 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var scopeGroupId = PortalUtil.getScopeGroupId(request)
         var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId)
 
-        if (application != null){
-            competition = Option(CompetitionLocalServiceUtil.getCompetition(application.getCompetitionId))
-            owningUserId = if (application.getOwnerUserId > 0) Option(application.getOwnerUserId) else Option(application.getUserId)
-            primKey = application.getApplicationId
-            isCurrentlyOverriddenBySubflow = ApplicationLocalServiceUtil.isCurrentlyOverriddenBySubflow(primKey, application.getStatus());
-            try {
-                applicationTitle = URLEncoder.encode(application.getTitle, "UTF-8")
-            } catch {
-                case e : Throwable ⇒ APISupport.Logger.error(e.getMessage())
-            }
+        if (application == null){
+            // might be requesting the site template..
+            return;
+        }
+        competition = Option(CompetitionLocalServiceUtil.getCompetition(application.getCompetitionId))
+        owningUserId = if (application.getOwnerUserId > 0) Option(application.getOwnerUserId) else Option(application.getUserId)
+        primKey = application.getApplicationId
+        isCurrentlyOverriddenBySubflow = ApplicationLocalServiceUtil.isCurrentlyOverriddenBySubflow(primKey, application.getStatus());
+        try {
+            applicationTitle = URLEncoder.encode(application.getTitle, "UTF-8")
+        } catch {
+            case e : Throwable ⇒ APISupport.Logger.error(e.getMessage())
         }
 
         // check if maybe we need to display a subform
