@@ -103,7 +103,7 @@
         </init-param>
         <init-param>
             <name>forward-parameters</name>
-            <value>applicationTitle userid groupid workflowid workflowtaskid workflowforminstanceid token returnurl serverhostname roleid orbeon-embeddable documentid document-id document application applicationid application-id</value>
+            <value>applicationTitle userid groupid workflowid workflowtaskid workflowforminstanceid token returnurl serverhostname roleid orbeon-embeddable documentid document-id document form application applicationid application-id</value>
         </init-param>
         
         <supports>
