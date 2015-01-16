@@ -33,13 +33,13 @@
     <!-- XForms state store configuration. Only modify if you know what you are doing! -->
     <!-- NOTE: We set this as a disk cache, but follow the Ehcache doc and set maxElementsInMemory to 1 instead of 0. -->
     <cache name="xforms.state"
-           maxElementsInMemory="1"
+           maxElementsInMemory="50"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true"
            diskSpoolBufferSizeMB="10"
            eternal="false"
            timeToLiveSeconds="0"
-           timeToIdleSeconds="18000"
+           timeToIdleSeconds="3600"
            diskPersistent="false"
            maxElementsOnDisk="0"
            diskExpiryThreadIntervalSeconds="120"/>

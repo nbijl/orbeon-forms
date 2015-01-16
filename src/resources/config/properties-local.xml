@@ -72,7 +72,7 @@
            recover error-message("database-error")'/>
 
     <property as="xs:string"  name="oxf.fr.detail.process.autosave.*.*"
-              value='visit-all then save
+              value='save
             recover error-message("database-error")'/>
     <property as="xs:string"  name="oxf.fr.detail.process.submit1.*.*"
               value='require-valid
@@ -142,5 +142,12 @@
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit4" value="empty4"/>
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit5" value="empty5"/>
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.autosave" value="autosave"/>
+
+    <property
+            as="xs:anyURI"
+            name="oxf.fr.detail.model.custom.*.*"
+            value="oxf:/config/always-show-error-summary.xml"/>
+
+
 
 </properties>
