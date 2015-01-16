@@ -14,12 +14,17 @@
   .orbeon #xforms-form .xforms-loading-loading,
   .orbeon #xforms-form .xforms-upload-remove,
   .orbeon #xforms-form .xbl-fr-attachment .xforms-output-appearance-xxforms-download,
-  .orbeon #xforms-form .xforms-help-image,
-  .orbeon #xforms-form .fr-section-title .xforms-help-image,
+  .orbeon #xforms-form .xforms-help,
+  .orbeon #xforms-form .fr-section-title .xforms-help,
   .orbeon #xforms-form .xforms-hint,
-  .orbeon #xforms-form .fr-buttons {
+  .orbeon #xforms-form .fr-buttons,
+  .orbeon .xforms-login-detected-dialog,
+  .orbeon #xforms-form .xforms-deselected,
+  .fr-grid-dropdown-menu{
     display: none;
   }
+
+
   .orbeon #xforms-form .xforms-upload-info {
     background: transparent none repeat scroll 0 0;
     padding-left: 2px;
@@ -29,43 +34,12 @@
   .orbeon #xforms-form .xforms-select-appearance-compact select {
     height: auto;
   }
-  .orbeon #xforms-form .clearfix:before,
-  .orbeon #xforms-form .clearfix:after,
-  .orbeon #xforms-form .row:before,
-  .orbeon #xforms-form .row:after,
-  .orbeon #xforms-form .row-fluid:before,
-  .orbeon #xforms-form .row-fluid:after,
-  .orbeon #xforms-form .container:before,
-  .orbeon #xforms-form .container:after,
-  .orbeon #xforms-form .container-fluid:before,
-  .orbeon #xforms-form .container-fluid:after,
-  .orbeon #xforms-form .dl-horizontal:before,
-  .orbeon #xforms-form .dl-horizontal:after,
-  .orbeon #xforms-form .controls-row:before,
-  .orbeon #xforms-form .controls-row:after,
-  .orbeon #xforms-form .form-actions:before,
-  .orbeon #xforms-form .form-actions:after,
-  .orbeon #xforms-form .form-horizontal .control-group:before,
-  .orbeon #xforms-form .form-horizontal .control-group:after,
-  .orbeon #xforms-form .nav-tabs:before,
-  .orbeon #xforms-form .nav-pills:before,
-  .orbeon #xforms-form .nav-tabs:after,
-  .orbeon #xforms-form .nav-pills:after,
-  .orbeon #xforms-form .tabbable:before,
-  .orbeon #xforms-form .tabbable:after,
-  .orbeon #xforms-form .navbar-inner:before,
-  .orbeon #xforms-form .navbar-inner:after,
-  .orbeon #xforms-form .navbar-form:before,
-  .orbeon #xforms-form .navbar-form:after,
-  .orbeon #xforms-form .pager:before,
-  .orbeon #xforms-form .pager:after,
-  .orbeon #xforms-form .modal-footer:before,
-  .orbeon #xforms-form .modal-footer:after,
-  .orbeon #xforms-form .thumbnails:before,
-  .orbeon #xforms-form .thumbnails:after,
-  .orbeon #xforms-form .navbar-inner:before,
-  .orbeon #xforms-form .navbar-inner:after {
-    display: block;
+  .orbeon #xforms-form .fr-grid .xforms-output.xforms-mediatype-image img {
+    -fs-fit-images-to-width: 100%;
+  }
+  .fr-header-title,
+  .fr-footer-title{
+    display:none;
   }
   .orbeon #xforms-form .input-append,
   .orbeon #xforms-form .input-prepend,
@@ -197,6 +171,7 @@
   .orbeon #xforms-form .fr-grid-content .xforms-control[data-id] span[class=""],
   .orbeon #xforms-form .fr-grid-content .xbl-fr-currency .xforms-output-output,
   .orbeon #xforms-form .fr-grid-content .xbl-fr-number .xforms-output-output,
+  .orbeon #xforms-form .fr-grid-content .xbl-fr-dropdown-select1 span span,
   .orbeon #xforms-form .fr-grid-content .text-field .xforms-output-output {
         float:left;
         width:650px;
@@ -206,11 +181,19 @@
         line-height: 2.5;
         min-height: 45px;
   }
+  .orbeon #xforms-form .fr-grid-content .xbl-fr-textcount .xforms-control[data-id]  span[class=""]{
+        width:auto;
+        float:none;
+        padding:0;
+        margin-bottom:0;
+        min-height: 0;
+        line-height: 1.2;
+  }
 
 
   .orbeon #xforms-form .xforms-input .xforms-label,
   .orbeon #xforms-form .xforms-select .xforms-label,
-  .orbeon #xforms-form .xforms-select1-appearance-minimal .xforms-label,
+  .orbeon #xforms-form .xbl-fr-dropdown-select1 .xforms-label,
   .orbeon #xforms-form .xforms-select-appearance-minimal .xforms-label,
   .orbeon #xforms-form .xforms-select1-appearance-full .xforms-label,
   .orbeon #xforms-form .xbl-fr-prefilled .xforms-label,
@@ -245,6 +228,7 @@
     font-family:arial,helvetica,sans-serif;
   }
 
+
   .orbeon textarea, 
   .orbeon pre {
     background: #dddddd;
@@ -252,7 +236,7 @@
     font-family:arial,helvetica,sans-serif !important;
     white-space: pre-line;
     width:945px;
-            min-height: 25px;
+    min-height: 25px;
     word-wrap:break-word;
   }
 
@@ -280,7 +264,7 @@
 
   .orbeon #xforms-form .multi-column-grid .xforms-input .xforms-label,
   .orbeon #xforms-form .multi-column-grid .xforms-select .xforms-label,
-  .orbeon #xforms-form .multi-column-grid .xforms-select1-appearance-minimal .xforms-label,
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-dropdown-select1 .xforms-label,
   .orbeon #xforms-form .multi-column-grid .xforms-select-appearance-minimal .xforms-label,
   .orbeon #xforms-form .multi-column-grid .xforms-select1-appearance-full .xforms-label,
   .orbeon #xforms-form .multi-column-grid .xbl-fr-prefilled .xforms-label,
@@ -289,7 +273,7 @@
   .orbeon #xforms-form .multi-column-grid .xbl-fr-currency .xforms-label,
   .orbeon #xforms-form  .multi-column-2 .xforms-input .xforms-label,
   .orbeon #xforms-form  .multi-column-2 .xforms-select .xforms-label,
-  .orbeon #xforms-form  .multi-column-2 .xforms-select1-appearance-minimal .xforms-label,
+  .orbeon #xforms-form  .multi-column-2 .xbl-fr-dropdown-select1 .xforms-label,
   .orbeon #xforms-form  .multi-column-2 .xforms-select-appearance-minimal .xforms-label,
   .orbeon #xforms-form  .multi-column-2 .xforms-select1-appearance-full .xforms-label,
   .orbeon #xforms-form  .multi-column-2 .xbl-fr-prefilled .xforms-label,
