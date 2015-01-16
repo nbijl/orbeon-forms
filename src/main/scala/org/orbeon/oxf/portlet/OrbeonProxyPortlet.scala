@@ -352,7 +352,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                 (worthRequest.token map ("&token=" + _) getOrElse "") +
                 (worthRequest.returnUrl map ("&returnurl=" + _) getOrElse "") +
                 (worthRequest.serverHostname map ("&serverhostname=" + _) getOrElse "") +
-                (worthRequest.roleIds map ("&roleid=" + _) getOrElse "")
+                ("&roleid=" + worthRequest.roleIds)
 
         APISupport.Logger.info(" got applicationParams   " + applicationParams)
         applicationParams
@@ -446,7 +446,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                                            isCurrentlyOverriddenBySubflow : Boolean,
                                            token : Option[String],
                                            returnUrl : Option[String],
-                                           roleIds : Option[String],
+                                           roleIds : String,
                                            serverHostname: Option[String]
 
                                            )
@@ -459,13 +459,13 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var className = classOf[Application].getName
         var primKey: Long = 0
         var assigneeId = "0"
-        var roleIds : Option[String] = Some("applicant")
+        var roleIds : String = "applicant"
         var competition : Option[Competition] = None
         var wfFormInstance : Option[WorkflowFormInstance] = None
         var wfFormDefinition: Option[WorkflowFormDefinition] = None
         var formConfigurationId : Long = 0
         var userId = PortalUtil.getUserId(request).toString
-        var owningUserId : Option[Long] = None
+        var owningUserId : Long = 0L
         var isCurrentlyOverriddenBySubflow: Boolean = false
         var applicationTitle: String = null
         var token:Option[String] = None
@@ -479,7 +479,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             return;
         }
         competition = Option(CompetitionLocalServiceUtil.getCompetition(application.getCompetitionId))
-        owningUserId = if (application.getOwnerUserId > 0) Option(application.getOwnerUserId) else Option(application.getUserId)
+        owningUserId = if (application.getOwnerUserId > 0) application.getOwnerUserId else application.getUserId
         primKey = application.getApplicationId
         isCurrentlyOverriddenBySubflow = ApplicationLocalServiceUtil.isCurrentlyOverriddenBySubflow(primKey, application.getStatus());
         try {
@@ -501,7 +501,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
         // yes, we found out that we are on a subform page
         if (wfFormInstance.isDefined && !wfFormInstance.get.isOverrideMainFlow()) {
-            owningUserId = Option(wfFormInstance.get.getUserId)
+            owningUserId = wfFormInstance.get.getUserId
             className = classOf[WorkflowFormInstance].getName
             primKey = wfFormInstance.get.getWorkflowFormInstanceId
         }
@@ -510,10 +510,12 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var wfTask  : WorkflowTask = CurrentWorkflowTaskLocalServiceUtil.lookupCurrentTask(PortalUtil.getCompanyId(request), wfInstance)
 
         assigneeId = wfTask.getAssigneeUserId().toString
-        APISupport.Logger.debug("roleId = applicant" + userId +" - "+ owningUserId.toString())
+        APISupport.Logger.info("roleId = applicant" + userId +" - "+ owningUserId.toString())
         if(!userId.equals(owningUserId.toString())){
-            APISupport.Logger.debug("user is not the application owner, so get roleid external")
-            roleIds = Option(RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
+            APISupport.Logger.info("user is not the application owner, so get roleid external " + RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
+            roleIds = RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request))
+        }else{
+            APISupport.Logger.info("user is  the application owner, otherwise would have gotten these roles: " + RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
         }
 
         var wfId = Option(WorkflowStatusMapperLocalServiceUtil.fromId(application.getStatus()).toString)
