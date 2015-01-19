@@ -1,6 +1,5 @@
 <xf:model xmlns:xf="http://www.w3.org/2002/xforms">	
-    <xf:action event="fr-data-ready">    	
+    <xf:action event="xforms-ready">    	
     	<xf:dispatch name="fr-visit-all" targetid="fr-error-summary-model"/>
-    	<xf:message level="xxf:log-warn">CUSTOM FILE fr-data-ready catched</xf:message>
     </xf:action>
 </xf:model>
