@@ -23,7 +23,6 @@ import org.apache.http.impl.client.BasicCookieStore
 import org.apache.log4j.Level
 import org.orbeon.oxf.common.{OXFException, ValidationException}
 import org.orbeon.oxf.externalcontext.URLRewriter
-import org.orbeon.oxf.fr.embedding.APISupport
 import org.orbeon.oxf.http.Headers._
 import org.orbeon.oxf.http._
 import org.orbeon.oxf.pipeline.api.ExternalContext
@@ -408,18 +407,7 @@ object Connection extends Logging {
                 val headers = customHeaders.toMap
 
                 if (requiresRequestBody(httpMethod) && firstHeaderIgnoreCase(headers, ContentType).isEmpty)
-                    if(mediatype != null){
-                        val header = (ContentType → List(mediatype ensuring (_ ne null)))
-                        APISupport.Logger.info("header")
-                        APISupport.Logger.info(mediatype)
-                        headers + header
-                    }else{
-                        APISupport.Logger.info("MediaType is null ")
-                        val header = (ContentType → List("application/xml"))
-                        APISupport.Logger.info("header set xml")
-                        APISupport.Logger.info(header.productElement(0).toString)
-                        headers + header
-                    }
+                    headers + (ContentType → List(mediatype ensuring (_ ne null)))
                 else
                     headers
             }
