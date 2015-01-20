@@ -20,7 +20,8 @@
   .orbeon #xforms-form .fr-buttons,
   .orbeon .xforms-login-detected-dialog,
   .orbeon #xforms-form .xforms-deselected,
-  .fr-grid-dropdown-menu{
+  .fr-grid-dropdown-menu,
+  .orbeon  #xforms-form .xforms-alert{
     display: none;
   }
 
@@ -82,12 +83,12 @@
          page-break-after:always;
   }
 
-  .page-break-before,
-  .orb-main-body > .xbl-fr-section + .xbl-fr-section > .xforms-group > h2.fr-section-title {
+
+  .fr-body > .xbl-fr-section > div > h2.fr-section-title {
      page-break-before:always;
   }
 
-  .orb-main-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > .xforms-group > h2.fr-section-title {
+  .fr-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > div > h2.fr-section-title {
       page-break-before: auto;
   }
   .orbeon h2 {
