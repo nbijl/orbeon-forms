@@ -454,10 +454,10 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                                            )
     private var worthRequest : WorthRequest = null
     def initWorthRequest(request: PortletRequest): Any = {
-        if(request == null){
+        if(request == null || PortalUtil.getUser(request) == null){
             return;
         }
-        //        var worthRequest :WorthRequest
+        //var worthRequest :WorthRequest
         var className = classOf[Application].getName
         var primKey: Long = 0
         var assigneeId = "0"
