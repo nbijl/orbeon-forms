@@ -1,0 +1,5 @@
+<xf:model xmlns:xf="http://www.w3.org/2002/xforms">	
+    <xf:action event="xforms-ready">    	
+    	<xf:dispatch name="fr-visit-all" targetid="fr-error-summary-model"/>
+    </xf:action>
+</xf:model>

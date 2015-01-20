@@ -289,7 +289,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             return View.name
         }
         if (!worthRequest.wfTask.isDefined) {
-            APISupport.Logger.info("WF Task is null, so view mode")
+            APISupport.Logger.debug("WF Task is null, so view mode")
             return View.name
         }
 
@@ -297,34 +297,34 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         // OR it's a subform task on the main workflow owned by the current user
         val simulfyEnabled = Support.isSimulfyEnabledForThisRequest(worthRequest.request)
         val simulfyBrowserSupported = Support.isBrowserSupportedForSimulfy(request)
-        APISupport.Logger.info("simulfyEnabled  " + simulfyEnabled.toString())
-        APISupport.Logger.info("simulfyBrowserSupported  " + simulfyBrowserSupported.toString())
+        APISupport.Logger.debug("simulfyEnabled  " + simulfyEnabled.toString())
+        APISupport.Logger.debug("simulfyBrowserSupported  " + simulfyBrowserSupported.toString())
 
         if ((worthRequest.userId.equals(worthRequest.assigneeId) && !simulfyEnabled) || (simulfyEnabled && simulfyBrowserSupported)) {
             // TODO: move this logic to the service layer and reuse in SubmitApplication
 
             if (!worthRequest.wfFormDefinition.isDefined) {
-                APISupport.Logger.info("No workflow form definition")
+                APISupport.Logger.debug("No workflow form definition")
             } else {
-                APISupport.Logger.info("Workflow form definition " + worthRequest.wfFormDefinition.get.getName());
+                APISupport.Logger.debug("Workflow form definition " + worthRequest.wfFormDefinition.get.getName());
             }
             if (!worthRequest.wfFormInstance.isDefined) {
-                APISupport.Logger.info("No workflow form definition")
+                APISupport.Logger.debug("No workflow form definition")
             } else {
-                APISupport.Logger.info("Workflow form instance " + worthRequest.wfFormInstance.get.getName());
+                APISupport.Logger.debug("Workflow form instance " + worthRequest.wfFormInstance.get.getName());
             }
             // show main form in view mode when when it wasn't specifically requested
             if ((worthRequest.isCurrentlyOverriddenBySubflow && worthRequest.wfFormInstance == null) ||
                     (worthRequest.wfFormInstance.isDefined && !worthRequest.wfFormDefinition.isDefined && worthRequest.wfFormInstance.get.isOverrideMainFlow()) ||
                     (worthRequest.wfFormInstance.isDefined && worthRequest.wfFormDefinition.isDefined && !worthRequest.wfFormInstance.get.getName().equals(worthRequest.wfFormDefinition.get.getName()))
             ) {
-                APISupport.Logger.info("View mode reason 1")
+                APISupport.Logger.debug("View mode reason 1")
                 View.name
             } else {
                 Edit.name
             }
         } else {
-            APISupport.Logger.info("View mode reason default")
+            APISupport.Logger.debug("View mode reason default")
             View.name
         }
 
@@ -336,12 +336,13 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         // workflowId, workflowTaskId, workflowFormInstanceId, formConfigurationId, token, returnUrl
 
         var scopeGroupId = PortalUtil.getScopeGroupId(request).toString
-        APISupport.Logger.info("scopeGroupId " + scopeGroupId)
+        APISupport.Logger.debug("scopeGroupId " + scopeGroupId)
         var userId : Option[String] = Option(PortalUtil.getUserId(request).toString)
         var groupId : Option[String] = Option(scopeGroupId)
 
 
-        var applicationParams = "a=a"+
+        var applicationParams = "orbeon-embeddable=true"+
+                "&applicationTitle=" + worthRequest.applicationTitle +
                 (userId map ("&userid=" + _) getOrElse "") +
                 (groupId map ("&groupid=" + _) getOrElse "") +
                 ("&document=" + docId) +
@@ -352,9 +353,9 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                 (worthRequest.token map ("&token=" + _) getOrElse "") +
                 (worthRequest.returnUrl map ("&returnurl=" + _) getOrElse "") +
                 (worthRequest.serverHostname map ("&serverhostname=" + _) getOrElse "") +
-                (worthRequest.roleIds map ("&roleid=" + _) getOrElse "")
+                ("&roleid=" + worthRequest.roleIds)
 
-        APISupport.Logger.info(" got applicationParams   " + applicationParams)
+        APISupport.Logger.debug(" got applicationParams   " + applicationParams)
         applicationParams
     }
 
@@ -365,7 +366,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         if(application == null){
             ""
         }else{
-            APISupport.Logger.info("application id  " + application.getApplicationId.toString)
+            APISupport.Logger.debug("application id  " + application.getApplicationId.toString)
             //Option(application.getApplicationId.toString)
             var docId = application.getApplicationId.toString
 
@@ -379,17 +380,17 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
     }
     private def getWorthFormRunnerPath(request: PortletRequest): String = {
         if(request == null){
-            APISupport.Logger.info("No request found, so return formRunnerHomePath ")
+            APISupport.Logger.debug("No request found, so return formRunnerHomePath ")
             return "/dont-show-list-with-forms"
         }
         if(worthRequest == null){
-            APISupport.Logger.info("worthRequest is null, so return formRunnerHomePath ")
+            APISupport.Logger.debug("worthRequest is null, so return formRunnerHomePath ")
             return "/dont-show-list-with-forms"
         }
 
-        APISupport.Logger.info("DocumentId " + getWorthApplicationDocumentId(request))
-        APISupport.Logger.info("DocumentId " + getPreferenceOrRequested(request, DocumentId))
-        APISupport.Logger.info("page  " + getPreferenceOrRequested(request, Page).toString)
+        APISupport.Logger.debug("DocumentId " + getWorthApplicationDocumentId(request))
+        APISupport.Logger.debug("DocumentId " + getPreferenceOrRequested(request, DocumentId))
+        APISupport.Logger.debug("page  " + getPreferenceOrRequested(request, Page).toString)
 
         // BEFORE: Option(getPreferenceOrRequested(request, DocumentId))
         var appName = getPreferenceOrRequested(request, AppName)
@@ -405,8 +406,8 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             formName = worthRequest.competition.get.getOrbeonFormName
         }
 
-        APISupport.Logger.info("phase enabled: " + worthRequest.competition.get.isPhasesEnabled);
-        APISupport.Logger.info("form config id: " + worthRequest.formConfigurationId);
+        APISupport.Logger.debug("phase enabled: " + worthRequest.competition.get.isPhasesEnabled);
+        APISupport.Logger.debug("form config id: " + worthRequest.formConfigurationId);
 
         if(worthRequest.wfFormInstance.isDefined){
             // for subforms.
@@ -415,7 +416,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         }
         else if(worthRequest.competition.isDefined && worthRequest.competition.get.isPhasesEnabled && worthRequest.formConfigurationId!=0L) {
             var formConfiguration = FormConfigurationLocalServiceUtil.getFormConfiguration(worthRequest.formConfigurationId);
-            APISupport.Logger.info("phase is enabled id: " + formConfiguration.getOrbeonAppName + " " + formConfiguration.getOrbeonFormName)
+            APISupport.Logger.debug("phase is enabled id: " + formConfiguration.getOrbeonAppName + " " + formConfiguration.getOrbeonFormName)
             appName = formConfiguration.getOrbeonAppName
             formName = formConfiguration.getOrbeonFormName
         }
@@ -428,7 +429,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             Option(docId),
             Option(getWorthApplicationParams(request, docId))
         )
-        APISupport.Logger.info("url  " + url)
+        APISupport.Logger.debug("url  " + url)
         url
     }
     private case class WorthRequest(
@@ -446,8 +447,9 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                                            isCurrentlyOverriddenBySubflow : Boolean,
                                            token : Option[String],
                                            returnUrl : Option[String],
-                                           roleIds : Option[String],
-                                           serverHostname: Option[String]
+                                           roleIds : String,
+                                           serverHostname: Option[String],
+                                           applicationTitle: String
 
                                            )
     private var worthRequest : WorthRequest = null
@@ -459,13 +461,13 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var className = classOf[Application].getName
         var primKey: Long = 0
         var assigneeId = "0"
-        var roleIds : Option[String] = Some("applicant")
+        var roleIds : String = "applicant"
         var competition : Option[Competition] = None
         var wfFormInstance : Option[WorkflowFormInstance] = None
         var wfFormDefinition: Option[WorkflowFormDefinition] = None
         var formConfigurationId : Long = 0
         var userId = PortalUtil.getUserId(request).toString
-        var owningUserId : Option[Long] = None
+        var owningUserId : Long = 0L
         var isCurrentlyOverriddenBySubflow: Boolean = false
         var applicationTitle: String = null
         var token:Option[String] = None
@@ -479,7 +481,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             return;
         }
         competition = Option(CompetitionLocalServiceUtil.getCompetition(application.getCompetitionId))
-        owningUserId = if (application.getOwnerUserId > 0) Option(application.getOwnerUserId) else Option(application.getUserId)
+        owningUserId = if (application.getOwnerUserId > 0) application.getOwnerUserId else application.getUserId
         primKey = application.getApplicationId
         isCurrentlyOverriddenBySubflow = ApplicationLocalServiceUtil.isCurrentlyOverriddenBySubflow(primKey, application.getStatus());
         try {
@@ -501,7 +503,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
         // yes, we found out that we are on a subform page
         if (wfFormInstance.isDefined && !wfFormInstance.get.isOverrideMainFlow()) {
-            owningUserId = Option(wfFormInstance.get.getUserId)
+            owningUserId = wfFormInstance.get.getUserId
             className = classOf[WorkflowFormInstance].getName
             primKey = wfFormInstance.get.getWorkflowFormInstanceId
         }
@@ -512,8 +514,10 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         assigneeId = wfTask.getAssigneeUserId().toString
         APISupport.Logger.debug("roleId = applicant" + userId +" - "+ owningUserId.toString())
         if(!userId.equals(owningUserId.toString())){
-            APISupport.Logger.debug("user is not the application owner, so get roleid external")
-            roleIds = Option(RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
+            APISupport.Logger.debug("user is not the application owner, so get roleid external " + RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
+            roleIds = RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request))
+        }else{
+            APISupport.Logger.debug("user is  the application owner, otherwise would have gotten these roles: " + RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
         }
 
         var wfId = Option(WorkflowStatusMapperLocalServiceUtil.fromId(application.getStatus()).toString)
@@ -540,10 +544,10 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             serverHostname = Some("http://" + serverHostname.get);
         }
 
-        APISupport.Logger.info("assigneeId " + assigneeId);
-        APISupport.Logger.info("userId " + userId);
+        APISupport.Logger.debug("assigneeId " + assigneeId);
+        APISupport.Logger.debug("userId " + userId);
 
-        worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, formConfigurationId, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname)
+        worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, formConfigurationId, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname, applicationTitle)
     }
     private def baseUrl() =
         PropsUtil.get("orbeon-pe.form.runner.url")

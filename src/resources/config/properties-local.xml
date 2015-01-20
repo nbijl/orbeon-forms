@@ -66,27 +66,25 @@
     <!-- override the save button to also send the form XML to Liferay so we can create a snapshot document -->
 
     <property as="xs:string"  name="oxf.fr.detail.process.save-draft.*.*"
-              value='visit-all then save
+              value='save
               then send("save-snapshot")             
            then success-message("save-draft-success")
            recover error-message("database-error")'/>
 
     <property as="xs:string"  name="oxf.fr.detail.process.autosave.*.*"
-              value='visit-all then save
+              value='save
             recover error-message("database-error")'/>
+
     <property as="xs:string"  name="oxf.fr.detail.process.submit1.*.*"
               value='require-valid
              then save 
              then send("workflow1")             
              recover error-message("database-error")'/>
-
     <property as="xs:string"  name="oxf.fr.detail.process.submit2.*.*"
-              value='require-uploads
-             then require-valid
+              value='require-valid
              then save 
              then send("workflow2")
              recover error-message("database-error")'/>
-
     <property as="xs:string"  name="oxf.fr.detail.process.submit3.*.*"
               value='require-valid
              then save 
@@ -97,7 +95,6 @@
              then save 
              then send("workflow4")
              recover error-message("database-error")'/>
-
     <property as="xs:string"  name="oxf.fr.detail.process.submit5.*.*"
               value='require-valid
              then save 
@@ -142,5 +139,12 @@
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit4" value="empty4"/>
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit5" value="empty5"/>
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.autosave" value="autosave"/>
+
+    <property
+            as="xs:anyURI"
+            name="oxf.fr.detail.model.custom.*.*"
+            value="oxf:/config/always-show-error-summary.xml"/>
+
+
 
 </properties>
