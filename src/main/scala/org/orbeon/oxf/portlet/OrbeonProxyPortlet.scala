@@ -509,9 +509,15 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         }
 
         var wfInstance = CurrentWorkflowTaskLocalServiceUtil.lookupCurrentWorkflowInstance(PortalUtil.getCompanyId(request), application.getUserId, primKey, className)
-        var wfTask  : WorkflowTask = CurrentWorkflowTaskLocalServiceUtil.lookupCurrentTask(PortalUtil.getCompanyId(request), wfInstance)
+        var wfTask  : WorkflowTask = null;
+        if(wfInstance != null){
+            wfTask = CurrentWorkflowTaskLocalServiceUtil.lookupCurrentTask(PortalUtil.getCompanyId(request), wfInstance)
+            if(wfTask != null){
+                // no task found, maybe workflow is finished?
+                assigneeId = wfTask.getAssigneeUserId().toString
+            }
+        }
 
-        assigneeId = wfTask.getAssigneeUserId().toString
         APISupport.Logger.debug("roleId = applicant" + userId +" - "+ owningUserId.toString())
         if(!userId.equals(owningUserId.toString())){
             APISupport.Logger.debug("user is not the application owner, so get roleid external " + RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
@@ -523,8 +529,10 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var wfId = Option(WorkflowStatusMapperLocalServiceUtil.fromId(application.getStatus()).toString)
         val wfFormInstanceId = if (!wfFormInstance.isDefined) 0 else wfFormInstance.get.getWorkflowFormInstanceId
 
-        token = Option(NavigationSupportLocalServiceUtil.getTokenizedWorkflowIdentifier(
-            application.getApplicationId, wfTask.getWorkflowTaskId, wfFormInstanceId))
+        if(wfTask != null){
+            token = Option(NavigationSupportLocalServiceUtil.getTokenizedWorkflowIdentifier(
+                application.getApplicationId, wfTask.getWorkflowTaskId, wfFormInstanceId))
+        }
 
         if(application != null && competition.isDefined){
             if(competition.get.isPhasesEnabled) {
