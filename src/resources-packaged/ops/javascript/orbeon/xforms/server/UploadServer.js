@@ -144,9 +144,11 @@
      */
     UploadServer.cancel = function(doAbort, event) {
         if (doAbort) Connect.abort(UploadServer.yuiConnection);
-        AjaxServer.fireEvents([new AjaxServer.Event(null, this.processingEvent.upload.container.id, null, event)], false);
-        this.processingEvent.upload.clear();
-        this.processingEvent.upload.setState("empty");
+        if(this.processingEvent != null && this.processingEvent.upload != null){
+            AjaxServer.fireEvents([new AjaxServer.Event(null, this.processingEvent.upload.container.id, null, event)], false);
+            this.processingEvent.upload.clear();
+            this.processingEvent.upload.setState("empty");
+        }
         this.continueWithRemainingEvents();
     };
 
