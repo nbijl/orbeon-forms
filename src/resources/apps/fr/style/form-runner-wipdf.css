@@ -84,12 +84,12 @@
   }
 
 
-  .fr-body > .xbl-fr-section > div > h2.fr-section-title {
+  .fr-body > .xbl-fr-section > div + div > h2.fr-section-title {
      page-break-before:always;
   }
 
-  .fr-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > div > h2.fr-section-title {
-      page-break-before: auto;
+  .fr-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > div > h2.fr-section-title{
+        page-break-before: auto;
   }
   .orbeon h2 {
     padding:5px 0;
@@ -169,9 +169,10 @@
     padding-bottom:10px;
   }
 
+
   .orbeon #xforms-form .fr-grid-content .xforms-control[data-id] span[class=""],
-  .orbeon #xforms-form .fr-grid-content .xbl-fr-currency .xforms-output-output,
-  .orbeon #xforms-form .fr-grid-content .xbl-fr-number .xforms-output-output,
+  .orbeon #xforms-form .fr-grid-content .xbl-fr-currency .xforms-field,
+  .orbeon #xforms-form .fr-grid-content .xbl-fr-number .xforms-field,
   .orbeon #xforms-form .fr-grid-content .xbl-fr-dropdown-select1 span span,
   .orbeon #xforms-form .fr-grid-content .text-field .xforms-output-output {
         float:left;
@@ -182,7 +183,21 @@
         line-height: 2.5;
         min-height: 45px;
   }
-  .orbeon #xforms-form .fr-grid-content .xbl-fr-textcount .xforms-control[data-id]  span[class=""]{
+    .orbeon .xbl-fr-databound-check > span {
+      overflow: hidden;
+    }
+  .orbeon .xbl-fr-databound-check > span > span{
+  background: transparent !important;
+  width:650px !important;
+  border: none !important;
+  display:inline-block !important;
+  margin-bottom: 60px;
+ }
+  .orbeon .xbl-fr-databound-check > span > span > span {
+  /*float:none !important;*/
+}
+  .orbeon #xforms-form .fr-grid-content .xbl-fr-textcount .xforms-control[data-id]  span[class=""],
+    .orbeon #xforms-form .fr-grid-content .xforms-textarea.xforms-control[data-id] span[class=""]{
         width:auto;
         float:none;
         padding:0;
@@ -190,6 +205,7 @@
         min-height: 0;
         line-height: 1.2;
   }
+
 
 
   .orbeon #xforms-form .xforms-input .xforms-label,
@@ -232,13 +248,16 @@
 
   .orbeon textarea, 
   .orbeon pre {
-    background: #dddddd;
+    background: #ddd;
     padding:10px;
     font-family:arial,helvetica,sans-serif !important;
     white-space: pre-line;
     width:945px;
     min-height: 25px;
     word-wrap:break-word;
+  }
+  .orbeon textarea  {
+    background: blue !important;
   }
 
 
@@ -306,6 +325,8 @@
         line-height: 1;
 
   }
+
+
   .orbeon #xforms-form  table.multi-column-grid,
   .orbeon #xforms-form  .multi-column-2 {
     width:1000px;
