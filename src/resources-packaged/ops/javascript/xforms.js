@@ -391,6 +391,9 @@ var DEFAULT_LOADING_TEXT = "Loading...";
              * Use W3C DOM API to get the content of an element.
              */
             getStringValue: function(element) {
+                if(element== undefined){
+                    return;
+                }
                 if (element.innerText == null) {
                     // Use W3C DOM API
                     var result = "";
