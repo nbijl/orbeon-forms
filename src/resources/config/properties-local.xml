@@ -67,8 +67,7 @@
 
     <property as="xs:string"  name="oxf.fr.detail.process.save-draft.*.*"
               value='save              
-              then send("save-snapshot")             
-              then visit-all
+              then send("save-snapshot")              
            then success-message("save-draft-success")
            recover error-message("database-error")'/>
 
@@ -135,12 +134,5 @@
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit4" value="empty4"/>
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.submit5" value="empty5"/>
     <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.autosave" value="autosave"/>
-
-    <property
-            as="xs:anyURI"
-            name="oxf.fr.detail.model.custom.*.*"
-            value="oxf:/config/always-show-error-summary.xml"/>
-
-
 
 </properties>

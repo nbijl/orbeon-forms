@@ -105,13 +105,14 @@
 
                 <!-- Errors for controls that have been visited AND which have a non-blank alert message -->
                 <xf:var
-                    name="visible-errors"
+                name="visible-errors"
                     as="element(error)*"
                     value="for $e in instance(if (instance('fr-state-instance')/incremental != 'false') then 'fr-errors-instance' else 'fr-snapshot-instance')/error
-                           return
-                               if (xxf:visited($e/@absolute-id))
-                               then $e
-                               else ()"/>
+                           return $e
+                               "/>
+                <!-- if (xxf:visited($e/@absolute-id))
+                               then 
+                               else () -->
 
                 <xf:bind ref="instance('fr-state-instance')">
                     <xf:bind ref="counts/@alert"                     calculate="count(instance('fr-errors-instance')/error)"/>
