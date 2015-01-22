@@ -80,15 +80,13 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
   }
   .page-break-after {
-         page-break-after:always;
+     page-break-after:always;
   }
-
-
-  .fr-body > .xbl-fr-section > div + div > h2.fr-section-title {
+  .fr-body > .xbl-fr-section + .xbl-fr-section > div  > h2.fr-section-title {
      page-break-before:always;
   }
 
-  .fr-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > div > h2.fr-section-title{
+  .fr-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > div > h2.fr-section-title {
         page-break-before: auto;
   }
   .orbeon h2 {
