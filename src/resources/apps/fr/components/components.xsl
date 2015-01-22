@@ -189,7 +189,7 @@
                 xxf:encrypt-item-values="{{for $mode in xxf:instance('fr-parameters-instance')/mode/string()
                                            return not($mode = 'pdf' and normalize-space(xxf:instance('fr-form-attachments')/pdf) != '')}}"
                 xxf:noscript="{{xxf:get-request-parameter('fr-noscript') = 'true'}}"
-                xxf:order="{{if (property('xxf:noscript')) then 'label control alert hint help' else 'help label control alert hint'}}"
+                xxf:order="{{if (property('xxf:noscript')) then 'label control alert hint help' else 'label help control alert hint'}}"
 
                 xxf:host-language="{{
                     for $mode in xxf:instance('fr-parameters-instance')/mode/string()
