@@ -84,12 +84,12 @@
   }
 
 
-  .fr-body > .xbl-fr-section > div > h2.fr-section-title {
+  .fr-body > .xbl-fr-section > div + div > h2.fr-section-title {
      page-break-before:always;
   }
 
-  .fr-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > div > h2.fr-section-title {
-      page-break-before: auto;
+  .fr-body > .xbl-fr-section.tsbsection-sectionCompInfo-control + .xbl-fr-section > div > h2.fr-section-title{
+        page-break-before: auto;
   }
   .orbeon h2 {
     padding:5px 0;
