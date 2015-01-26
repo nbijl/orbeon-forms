@@ -390,7 +390,7 @@ Inserting error information into error list:
                                     <xf:repeat ref="$visible-errors" id="er">
                                         <xh:li>
                                             <!-- Clickable / linkable label -->
-                                            <xf:var name="has-label" value="not(normalize-space(@label) = '')"/>
+                                            <xf:var name="has-label" value="normalize-space(@label) != ''"/>
                                             <xf:var name="focusable" value="xxf:focusable(@absolute-id)"/>
 <!--                                            <xh:td class="fr-error-number"><xf:output value="position()"/></xh:td> -->
                                                 <xf:group ref=".[$has-label]">
