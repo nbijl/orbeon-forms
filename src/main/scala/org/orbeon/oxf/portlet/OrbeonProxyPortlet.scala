@@ -429,7 +429,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             Option(docId),
             Option(getWorthApplicationParams(request, docId))
         )
-        APISupport.Logger.debug("url  " + url)
+        APISupport.Logger.info("Orbeon-PE Proxy Portlet " + url)
         url
     }
     private case class WorthRequest(
@@ -518,7 +518,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             }
         }
 
-        APISupport.Logger.debug("roleId = applicant" + userId +" - "+ owningUserId.toString())
+        APISupport.Logger.info("roleId = applicant" + userId +" - "+ owningUserId.toString())
         if(!userId.equals(owningUserId.toString())){
             APISupport.Logger.debug("user is not the application owner, so get roleid external " + RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request)))
             roleIds = RoleMapperLocalServiceUtil.getRoleIds(PortalUtil.getUser(request))
