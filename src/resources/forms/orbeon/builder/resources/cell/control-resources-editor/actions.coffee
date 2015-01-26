@@ -12,6 +12,7 @@ See the GNU Lesser General Public License for more details.
 The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
 ###
 
+$ = ORBEON.jQuery
 Builder = ORBEON.Builder
 OD = ORBEON.xforms.Document
 
@@ -56,7 +57,6 @@ Builder.resourceEditorStartEdit = () ->
     labelHintEditor().container.show()
     labelHintEditor().container.offset(labelHintOffset)
     labelHintEditor().container.width(Builder.resourceEditorCurrentLabelHint.outerWidth())
-    labelHintEditor().textfield.outerWidth(Builder.resourceEditorCurrentLabelHint.outerWidth() - labelHintEditor().checkbox.outerWidth(true))
     labelHintEditor().textfield.val(labelHintValue()).focus()
     labelHintEditor().checkbox.prop('checked', isLabelHintHtml())
     # Set tooltip for checkbox and HTML5 placeholders (don't do this once for all, as the language can change)

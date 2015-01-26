@@ -122,7 +122,7 @@
 
                 <!-- Template for error information -->
                 <xf:instance id="fr-error-template" xxf:readonly="true">
-                    <error xmlns="" absolute-id="" position="" label="" alert="" level=""/>
+                    <error xmlns="" absolute-id="" position="" label="" alert="" level="" section-name=""/>
                 </xf:instance>
 
                 <!-- Reusable method to insert an error in the right place in the summary -->
@@ -151,11 +151,12 @@ Inserting error information into error list:
                     <xf:insert context="." ref="error[$insert-position]" origin="instance('fr-error-template')"/>
                     <!-- Set all the attributes -->
                     <xf:action context="error[$insert-position + 1]">
-                        <xf:setvalue ref="@absolute-id" value="$absolute-id"/>
-                        <xf:setvalue ref="@position"    value="$control-position"/>
-                        <xf:setvalue ref="@level"       value="$level"/>
-                        <xf:setvalue ref="@alert"       value="$alert"/>
-                        <xf:setvalue ref="@label"       value="$label"/>
+                        <xf:setvalue ref="@absolute-id"  value="$absolute-id"/>
+                        <xf:setvalue ref="@position"     value="$control-position"/>
+                        <xf:setvalue ref="@level"        value="$level"/>
+                        <xf:setvalue ref="@alert"        value="$alert"/>
+                        <xf:setvalue ref="@label"        value="$label"/>
+                        <xf:setvalue ref="@section-name" value="frf:topLevelSectionNameForControlId($absolute-id)"/>
                     </xf:action>
 
                 </xf:action>
@@ -394,27 +395,37 @@ Inserting error information into error list:
                                     <xf:repeat ref="$visible-errors" id="er">
                                         <xh:tr>
                                             <!-- Clickable / linkable label -->
-                                            <xf:var name="has-label" value="exists(normalize-space(@label))"/>
-                                            <xf:var name="focusable" value="xxf:focusable(@absolute-id)"/>
+                                            <xf:var
+                                                name="label"
+                                                value="if (normalize-space(@label) != '') then @label else '&lt;i class=&quot;icon-arrow-right&quot;/>'"/>
+                                            <xf:var
+                                                name="focusable"
+                                                value="xxf:focusable(@absolute-id)"/>
+
                                             <xh:td class="fr-error-number"><xf:output value="position()"/></xh:td>
                                             <xh:td>
-                                                <xf:group ref=".[$has-label]">
-                                                    <!-- In noscript mode, use a plain link to the client id -->
-                                                    <xf:group ref=".[$noscript]">
-                                                        <xh:a href="#{{xxf:client-id(@absolute-id)}}"><xf:output mediatype="text/html" value="@label" class="fr-error-label"/></xh:a>
-                                                    </xf:group>
-                                                    <!-- If the control is not focusable, don't link -->
-                                                    <xf:output
-                                                        ref=".[not($noscript) and not($focusable)]"
-                                                        class="fr-error-label"
-                                                        mediatype="text/html"
-                                                        value="@label"/>
-                                                    <!-- Otherwise use trigger -->
-                                                    <xf:trigger ref=".[not($noscript) and $focusable]" appearance="minimal" class="fr-error-label">
-                                                        <xf:label mediatype="text/html" value="@label"/>
-                                                        <xf:setfocus ev:event="DOMActivate" control="{{@absolute-id}}"/>
-                                                    </xf:trigger>
-                                                </xf:group>
+                                                <xf:switch caseref="$noscript" xxf:xforms11-switch="true">
+                                                    <xf:case value="true()">
+                                                        <!-- Use a plain link to the client id -->
+                                                        <xh:a href="#{{xxf:client-id(@absolute-id)}}"><xf:output mediatype="text/html" value="$label" class="fr-error-label"/></xh:a>
+                                                    </xf:case>
+                                                    <xf:case value="false()">
+                                                        <xf:switch caseref="$focusable" xxf:xforms11-switch="true">
+                                                            <xf:case value="true()">
+                                                                <xf:trigger appearance="minimal" class="fr-error-label">
+                                                                    <xf:label mediatype="text/html" value="$label"/>
+                                                                    <xf:setfocus ev:event="DOMActivate" control="{{@absolute-id}}"/>
+                                                                </xf:trigger>
+                                                            </xf:case>
+                                                            <xf:case value="false()">
+                                                                <xf:output
+                                                                    class="fr-error-label"
+                                                                    mediatype="text/html"
+                                                                    value="$label"/>
+                                                            </xf:case>
+                                                        </xf:switch>
+                                                    </xf:case>
+                                                </xf:switch>
                                             </xh:td>
                                             <xh:td>
                                                 <xf:output

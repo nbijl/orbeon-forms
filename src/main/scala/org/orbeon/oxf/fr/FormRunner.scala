@@ -25,6 +25,7 @@ object FormRunner
     with FormRunnerControlOps
     with FormRunnerContainerOps
     with FormRunnerSummary
+    with FormRunnerWizard
     with FormRunnerHome
     with FormRunnerMetadata
     with PathOps

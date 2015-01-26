@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2009 Orbeon, Inc.
+ * Copyright (C) 2015 Orbeon, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation; either version
@@ -11,20 +11,9 @@
  *
  * The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
  */
-package org.orbeon.oxf.cache;
+(function() {
 
-import java.util.Iterator;
+    window.ORBEON = window.ORBEON || {};
+    window.ORBEON.jQuery = $.noConflict(true);
 
-public interface Cache {
-    void add(CacheKey key, Object validity, Object object);
-    void remove(CacheKey key);
-    int removeAll();
-    Object findValid(CacheKey key, Object validity);
-    Object takeValid(CacheKey key, Object validity);
-    CacheEntry findAny( CacheKey key);
-    Iterator<CacheKey> iterateCacheKeys();
-    Iterator<Object> iterateCacheObjects();
-    int getCurrentSize();
-    int getMaxSize();
-    void setMaxSize(int maxSize);
-}
+})();

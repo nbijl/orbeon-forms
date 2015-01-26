@@ -116,13 +116,16 @@ object ScalaUtils extends PathOps {
         result map { case (k, v) ⇒ k → v.result } toList
     }
 
-    def findDuplicates(t: Traversable[String]): List[String] = {
-        val result = mutable.LinkedHashSet[String]()
-        val seen   = mutable.HashSet[String]()
+    // Return duplicate values in the order in which they appear
+    // A duplicate value is returned only once
+    def findDuplicates[T](t: Traversable[T]): List[T] = {
+        val result = mutable.LinkedHashSet[T]()
+        val seen   = mutable.HashSet[T]()
         for (x ← t) {
             if (seen(x))
                 result += x
-            seen += x
+            else
+                seen += x
         }
         result.to[List]
     }
@@ -140,7 +143,17 @@ object ScalaUtils extends PathOps {
 
     // Extensions on Iterator[T]
     implicit class IteratorWrapper[T](val i: Iterator[T]) extends AnyVal {
-        def nextOption = i.hasNext option i.next()
+        def nextOption(): Option[T] = i.hasNext option i.next()
+        def lastOption(): Option[T] = {
+            var n = nextOption()
+            while (n.isDefined) {
+                val nextN = nextOption()
+                if (nextN.isEmpty)
+                    return n
+                n = nextN
+            }
+            None
+        }
     }
 
     // Extensions on Iterator object
@@ -221,6 +234,18 @@ object ScalaUtils extends PathOps {
         }
         builder.result()
     }
+
+    def truncateWithEllipsis(s: String, maxLength: Int, tolerance: Int): String =
+        if (s.length <= maxLength + tolerance) {
+            s
+        } else {
+            val after = s.substring(maxLength, (maxLength + tolerance + 1) min s.length)
+            val afterSpaceIndex = after lastIndexOf " "
+            if (afterSpaceIndex != -1)
+                s.substring(0, maxLength) + after.substring(0, afterSpaceIndex) + '…'
+            else
+                s.substring(0, maxLength) + '…'
+        }
 
     implicit class TraversableLikeOps[A, Repr](val t: TraversableLike[A, Repr]) extends AnyVal {
         def groupByKeepOrder[K](f: A ⇒ K)(implicit cbf: CanBuildFrom[Nothing, A, Repr]): List[(K, Repr)] = {

@@ -11,15 +11,22 @@
  *
  * The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
  */
-YAHOO.namespace("xbl.fr");
-YAHOO.xbl.fr.Tabbable = function() {};
-ORBEON.xforms.XBL.declareClass(YAHOO.xbl.fr.Tabbable, "xbl-fr-tabbable");
-YAHOO.xbl.fr.Tabbable.prototype = {
+(function() {
 
-    init: function() {
-        $(this.container).find('.nav-tabs a').click(function (e) {
-            e.preventDefault();
-            $(this).tab('show');
-        })
-    }
-};
+    var $ = ORBEON.jQuery;
+    YAHOO.namespace("xbl.fr");
+    YAHOO.xbl.fr.Tabbable = function() {};
+    ORBEON.xforms.XBL.declareClass(YAHOO.xbl.fr.Tabbable, "xbl-fr-tabbable");
+    YAHOO.xbl.fr.Tabbable.prototype = {
+
+        init: function() {
+            $(this.container).find('.nav-tabs a').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            })
+        }
+    };
+
+})();
+
+
