@@ -309,11 +309,11 @@
   }
 
   .orbeon #xforms-form  .multi-column-grid  .xforms-control[data-id] span[class=""],
-  .orbeon #xforms-form .multi-column-grid .xbl-fr-currency .xforms-output-output,
-  .orbeon #xforms-form .multi-column-grid .xbl-fr-number .xforms-output-output,
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-currency .xforms-field,
+  .orbeon #xforms-form .multi-column-grid .xbl-fr-number .xforms-field,
   .orbeon #xforms-form  .tsbsection-section-9-s9_budget-control .multi-column-2  .xforms-control[data-id] span[class=""],
-  .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 .xbl-fr-currency .xforms-output-output,
-  .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 .xbl-fr-number .xforms-output-output {
+  .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 .xbl-fr-currency .xforms-field,
+  .orbeon #xforms-form .tsbsection-section-9-s9_budget-control .multi-column-2 .xbl-fr-number .xforms-field {
     float:none;
     text-align: left;
     background: none;
