@@ -171,7 +171,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
     private def createRequestDetails(settings: PortletSettings, request: PortletRequest, namespace: String): RequestDetails = {
         // Determine URL based on preferences and request
         val path = {
-            initWorthRequest(request)
+            var worthRequest : WorthRequest = initWorthRequest(request)
 
             def pathParameterOpt =
                 Option(request.getParameter(WSRPURLRewriter.PathParameterName))
@@ -180,9 +180,9 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                 if (getPreference(request, Page) == "home")
                     APISupport.formRunnerHomePath(None)
                 else
-                    getWorthFormRunnerPath(request)
+                    getWorthFormRunnerPath(request, worthRequest)
 
-            def filterMode(mode: String) = getWorthViewMode(request)
+            def filterMode(mode: String) = getWorthViewMode(request, worthRequest)
 
             pathParameterOpt getOrElse defaultPath match {
                 case path @ "/xforms-server-submit" ⇒
@@ -284,7 +284,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         }
 
 
-    private def getWorthViewMode(request: PortletRequest) : String = {
+    private def getWorthViewMode(request: PortletRequest, worthRequest: WorthRequest) : String = {
         if(worthRequest == null){
             return View.name
         }
@@ -330,7 +330,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
     }
 
-    private def getWorthApplicationParams(request: PortletRequest, docId: String): String = {
+    private def getWorthApplicationParams(request: PortletRequest, worthRequest: WorthRequest, docId: String): String = {
         // Fields to return :
         // roleId, workflowTaskId, serverHostname, applicationTitle, userId, groupId,
         // workflowId, workflowTaskId, workflowFormInstanceId, formConfigurationId, token, returnUrl
@@ -359,7 +359,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         applicationParams
     }
 
-    private def getWorthApplicationDocumentId(request: PortletRequest) : String = {
+    private def getWorthApplicationDocumentId(request: PortletRequest, worthRequest: WorthRequest) : String = {
         var scopeGroupId = PortalUtil.getScopeGroupId(request)
         var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId)
 
@@ -378,7 +378,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             docId
         }
     }
-    private def getWorthFormRunnerPath(request: PortletRequest): String = {
+    private def getWorthFormRunnerPath(request: PortletRequest, worthRequest: WorthRequest): String = {
         if(request == null){
             APISupport.Logger.debug("No request found, so return formRunnerHomePath ")
             return "/dont-show-list-with-forms"
@@ -388,7 +388,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             return "/dont-show-list-with-forms"
         }
 
-        APISupport.Logger.debug("DocumentId " + getWorthApplicationDocumentId(request))
+        APISupport.Logger.debug("DocumentId " + getWorthApplicationDocumentId(request, worthRequest))
         APISupport.Logger.debug("DocumentId " + getPreferenceOrRequested(request, DocumentId))
         APISupport.Logger.debug("page  " + getPreferenceOrRequested(request, Page).toString)
 
@@ -421,18 +421,18 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
             formName = formConfiguration.getOrbeonFormName
         }
 
-        val docId = getWorthApplicationDocumentId(request)
+        val docId = getWorthApplicationDocumentId(request, worthRequest)
         val url = APISupport.formRunnerPath(
             appName,
             formName,
-            getWorthViewMode(request),
+            getWorthViewMode(request, worthRequest),
             Option(docId),
-            Option(getWorthApplicationParams(request, docId))
+            Option(getWorthApplicationParams(request, worthRequest, docId))
         )
         APISupport.Logger.info("Orbeon-PE Proxy Portlet " + url)
         url
     }
-    private case class WorthRequest(
+    case class WorthRequest(
                                            wfId : Option[String] = None,
                                            wfInstance: WorkflowInstance, // lowercase name → original name
                                            wfTask : Option[WorkflowTask],
@@ -452,10 +452,10 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
                                            applicationTitle: String
 
                                            )
-    private var worthRequest : WorthRequest = null
-    def initWorthRequest(request: PortletRequest): Any = {
+
+    def initWorthRequest(request: PortletRequest): WorthRequest = {
         if(request == null || PortalUtil.getUser(request) == null){
-            return;
+            return null;
         }
         //var worthRequest :WorthRequest
         var className = classOf[Application].getName
@@ -476,10 +476,13 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var scopeGroupId = PortalUtil.getScopeGroupId(request)
         var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId)
 
+        APISupport.Logger.info("Orbeon-PE Proxy Portlet - scopegroupId: " + scopeGroupId)
+
         if (application == null){
             // might be requesting the site template..
-            return;
+            return null;
         }
+
         competition = Option(CompetitionLocalServiceUtil.getCompetition(application.getCompetitionId))
         owningUserId = if (application.getOwnerUserId > 0) application.getOwnerUserId else application.getUserId
         primKey = application.getApplicationId
@@ -555,7 +558,8 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         APISupport.Logger.debug("assigneeId " + assigneeId);
         APISupport.Logger.debug("userId " + userId);
 
-        worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, formConfigurationId, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname, applicationTitle)
+        var worthRequest = WorthRequest(wfId, wfInstance, Option(wfTask), application, request, userId, assigneeId, competition, wfFormDefinition, wfFormInstance, formConfigurationId, isCurrentlyOverriddenBySubflow, token, returnUrl, roleIds, serverHostname, applicationTitle)
+        worthRequest
     }
     private def baseUrl() =
         PropsUtil.get("orbeon-pe.form.runner.url")
