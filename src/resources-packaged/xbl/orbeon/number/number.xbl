@@ -116,11 +116,7 @@
                             value="
                                 if (string($binding) castable as xs:decimal)
                                 then
-                                    if (string-length(substring-after(string(xs:decimal($binding)), '.')) gt xs:integer($digits-after-decimal))
-                                    then
-                                        translate(string($binding), '.', $decimal-separator)
-                                    else
-                                        translate(format-number(xs:decimal($binding), $picture-string), '.,', concat($decimal-separator, $grouping-separator))
+                                     translate(format-number(xs:decimal($binding), $picture-string), '.,', concat($decimal-separator, $grouping-separator))
                                 else
                                      string($binding)">
                             <!-- Rewrite event as xxforms-iteration-moved doesn't bubble -->
