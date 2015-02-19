@@ -16,10 +16,11 @@ package org.orbeon.oxf.portlet
 import java.net.URLEncoder
 import javax.portlet._
 
+import com.liferay.portal.UserIdException
 import com.liferay.portal.kernel.util.{PropsUtil, WebKeys}
 import com.liferay.portal.kernel.workflow._
 import com.liferay.portal.model.Layout
-import com.liferay.portal.service.ServiceContext
+import com.liferay.portal.service.{UserLocalServiceUtil, ServiceContext}
 import com.liferay.portal.theme.ThemeDisplay
 import com.liferay.portal.util.PortalUtil
 import com.worthit.tsb.model.{Application, Competition, WorkflowFormDefinition, WorkflowFormInstance, FormConfiguration}
@@ -455,8 +456,9 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
     def initWorthRequest(request: PortletRequest): WorthRequest = {
         if(request == null || PortalUtil.getUser(request) == null){
-            return null;
+            throw new UserIdException("User not logged on");
         }
+
         //var worthRequest :WorthRequest
         var className = classOf[Application].getName
         var primKey: Long = 0
@@ -473,7 +475,17 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
         var token:Option[String] = None
         var returnUrl: Option[String] = None
 
+        if (userId == "0") {
+            throw new UserIdException("User not logged on");
+        }
+
         var scopeGroupId = PortalUtil.getScopeGroupId(request)
+
+        if (!UserLocalServiceUtil.hasGroupUser(scopeGroupId, PortalUtil.getUserId(request)) &&
+                !RoleMapperLocalServiceUtil.isAnyKnownCompetitionRole(UserLocalServiceUtil.getUser(PortalUtil.getUserId(request)))) {
+            throw new UserIdException("Incorrect authorization for " + userId + " and " + scopeGroupId);
+        }
+
         var application = ApplicationLocalServiceUtil.getApplicationByGroupId(scopeGroupId)
 
         APISupport.Logger.info("Orbeon-PE Proxy Portlet - scopegroupId: " + scopeGroupId)
