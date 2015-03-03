@@ -26,7 +26,7 @@
          xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
          xmlns:oxf="http://www.orbeon.com/oxf/processors">
 
-    <xbl:binding id="fr-explanation" element="fr|explanation">
+    <xbl:binding id="fr-explanation" element="fr|explanation" xxbl:mode="binding">
 
         <fb:metadata>
             <fb:display-name lang="en">Explanation</fb:display-name>
@@ -55,7 +55,7 @@
         </fb:metadata>
 
         <xbl:template>
-            <xf:output xxbl:attr="fr:text/@ref" mediatype="text/html" xxbl:scope="outer" class="xforms-text"/>
+            <xf:output xxbl:attr="fr:text/( @ref | @mediatype )" xxbl:scope="outer" class="xforms-text"/>
         </xbl:template>
     </xbl:binding>
 </xbl:xbl>

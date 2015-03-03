@@ -359,10 +359,12 @@
 
                             </xf:group>
 
-                            <xf:group class="fb">
+                            <xf:group class="fb fb-hide-alert">
                                 <!-- Dynamically display the form being edited -->
                                 <xxf:dynamic id="fb" ref="instance('fb-form-instance')"/>
+                                <!--<fr:xforms-inspector/>-->
                             </xf:group>
+
 
                             <!-- Editors -->
                             <!-- NOTE: This needs to be after the xxf:dynamic as the shared upload control use xxf:binding() to get the binding of the current node,
@@ -438,6 +440,7 @@
                                 <xf:output class="fb-message-enter-hint"    ref="$form-resources/enter-hint/label"/>
                                 <xf:output class="fb-message-type-hint"     ref="$form-resources/type-hint/label"/>
                                 <xf:output class="fb-message-enter-text"    ref="$form-resources/enter-text/label"/>
+                                <xf:output class="fb-message-type-text"     ref="$form-resources/type-text/label"/>
 
                                 <!-- Used by the button/link editor, see the placeholders.coffee which uses a state machine -->
                                 <xf:group ref=".[exists($control/xf:label/@ref)]" appearance="xxf:internal">

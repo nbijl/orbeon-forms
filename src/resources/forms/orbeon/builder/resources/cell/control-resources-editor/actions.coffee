@@ -21,7 +21,10 @@ Builder.resourceEditorCurrentControl = null
 Builder.resourceEditorCurrentLabelHint = null
 
 # Read/write class telling us if the label/hint is in HTML, set in grid.xml
-lhha = -> if Builder.resourceEditorCurrentLabelHint.is('.xforms-label') then 'label' else 'hint'
+lhha = ->
+    if      Builder.resourceEditorCurrentLabelHint.is('.xforms-label')             then 'label'
+    else if Builder.resourceEditorCurrentLabelHint.parents('.xforms-text').is('*') then 'text'
+    else                                                                                'hint'
 htmlClass = -> 'fb-' + lhha() + '-is-html'
 isLabelHintHtml = -> Builder.resourceEditorCurrentControl.is('.' + htmlClass())
 setLabelHintHtml = (isHtml) -> Builder.resourceEditorCurrentControl.toggleClass(htmlClass(), isHtml)
@@ -37,14 +40,21 @@ labelHintValue = (value) ->
 labelHintEditor = _.memoize ->
     # Create elements and add to the DOM
     editor = {}
-    editor.textfield = $('<input type="text">')
-    editor.checkbox  = $('<input type="checkbox">')
-    editor.container = $('<div class="fb-label-editor">').append(editor.textfield).append(editor.checkbox)
+    textfield = $('<input style="display: none" type="text">')
+    textarea  = $('<textarea style="display: none"></textarea>')
+    # End edit when users press enter in the textfield (but not the text area)
+    textfield.on('keypress', (e) -> if e.which == 13 then Builder.resourceEditorEndEdit())
+    editor.editControl = null
+    editor.selectTextInput = ->
+        editor.editControl?.hide()
+        editor.editControl = if lhha() == 'text' then textarea else textfield
+        editor.editControl.show()
+    editor.checkbox   = $('<input type="checkbox">')
+    editor.container  = $('<div class="fb-label-editor">').append(textarea).append(textfield).append(editor.checkbox)
     editor.container.hide()
     $('.fb-main').append(editor.container)
     # Register event listeners
-    editor.checkbox.on('click', -> labelHintEditor().textfield.focus())
-    editor.textfield.on('keypress', (e) -> if e.which == 13 then Builder.resourceEditorEndEdit())
+    editor.checkbox.on('click', -> labelHintEditor().editControl.focus())
     editor
 
 # Show editor on click on label
@@ -54,14 +64,15 @@ Builder.resourceEditorStartEdit = () ->
     # Show, position, and populate editor
     # Get position before showing editor, so showing doesn't move things in the page
     labelHintOffset = Builder.resourceEditorCurrentLabelHint.offset()
+    labelHintEditor().selectTextInput()
     labelHintEditor().container.show()
     labelHintEditor().container.offset(labelHintOffset)
     labelHintEditor().container.width(Builder.resourceEditorCurrentLabelHint.outerWidth())
-    labelHintEditor().textfield.val(labelHintValue()).focus()
+    labelHintEditor().editControl.val(labelHintValue()).focus()
     labelHintEditor().checkbox.prop('checked', isLabelHintHtml())
     # Set tooltip for checkbox and HTML5 placeholders (don't do this once for all, as the language can change)
     labelHintEditor().checkbox.tooltip(title: $('.fb-message-lhha-checkbox').text())
-    labelHintEditor().textfield.attr('placeholder', $(".fb-message-type-#{lhha()}").text())
+    labelHintEditor().editControl.attr('placeholder', $(".fb-message-type-#{lhha()}").text())
     # Hide setting visibility instead of .hide(), as we still want the label to take space, on which we show the input
     Builder.resourceEditorCurrentLabelHint.css('visibility', 'hidden')
     # Add class telling if this is a label or hint editor
@@ -72,7 +83,7 @@ Builder.resourceEditorEndEdit = ->
     # If editor is hidden, editing has already been ended (endEdit can be called more than once)
     if labelHintEditor().container.is(':visible')
         # Send value to server, handled in FB's model.xml
-        newValue = labelHintEditor().textfield.val()
+        newValue = labelHintEditor().editControl.val()
         isChecked = labelHintEditor().checkbox.is(':checked')
         OD.dispatchEvent
             targetId: Builder.resourceEditorCurrentControl.attr('id')

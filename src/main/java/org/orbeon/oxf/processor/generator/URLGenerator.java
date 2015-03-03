@@ -360,7 +360,7 @@ public class URLGenerator extends ProcessorImpl {
                             final String forwardHeaders; {
                                 // Get from configuration first, otherwise use global default
                                 final org.dom4j.Node configForwardHeaders = XPathUtils.selectSingleNode(configElement, "/config/forward-headers");
-                                forwardHeaders = configForwardHeaders != null ? XPathUtils.selectStringValue(configForwardHeaders, ".") : Connection.getForwardHeaders();
+                                forwardHeaders = configForwardHeaders != null ? XPathUtils.selectStringValue(configForwardHeaders, ".") : Connection.jHeadersToForward();
                             }
 
                             final List<String> readHeaders = new LinkedList<String>();
@@ -416,8 +416,6 @@ public class URLGenerator extends ProcessorImpl {
                                     cacheUseLocalCache, enableConditionalGET,
                                     username, password, preemptiveAuth, domain,
                                     tidyConfig);
-                            if (logger.isDebugEnabled())
-                                logger.debug("Read configuration: " + config.toString());
                             return new ConfigURIReferences(config);
                         }
                     });
@@ -921,7 +919,13 @@ public class URLGenerator extends ProcessorImpl {
                     throw new OXFException(e);
                 }
                 final scala.collection.immutable.Map<String, scala.collection.immutable.List<String>> headers =
-                    Connection.jBuildConnectionHeadersLowerIfNeeded(url.getScheme(), credentials, newHeaders, config.getForwardHeaders(), indentedLogger);
+                    Connection.jBuildConnectionHeadersLowerIfNeeded(
+                        url.getScheme(),
+                        credentials != null,
+                        newHeaders,
+                        config.getForwardHeaders(),
+                        indentedLogger
+                    );
 
                 connectionResult =
                     Connection.jApply("GET", url, credentials, null, headers, true, false, indentedLogger).connect(true);

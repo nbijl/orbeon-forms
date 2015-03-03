@@ -69,7 +69,14 @@ class FormRunnerPersistenceProxy extends ProcessorImpl {
     }
 
     // Proxy the request depending on app/form name and whether we are accessing form or data
-    private def proxyRequest(request: Request, response: Response, app: String, form: String, formOrData: String, path: String): Unit = {
+    private def proxyRequest(
+        request    : Request,
+        response   : Response,
+        app        : String,
+        form       : String,
+        formOrData : String,
+        path       : String
+    ): Unit = {
 
         def buildQueryString =
             NetUtils.encodeQueryString(request.getParameterMap)
@@ -93,14 +100,26 @@ class FormRunnerPersistenceProxy extends ProcessorImpl {
     private def proxyEstablishConnection(request: Request, uri: String, headers: Map[String, String]) = {
         // Create the absolute outgoing URL
         val outgoingURL =
-            URLRewriterUtils.rewriteServiceURL(NetUtils.getExternalContext.getRequest, uri, URLRewriter.REWRITE_MODE_ABSOLUTE)
+            new URI(URLRewriterUtils.rewriteServiceURL(NetUtils.getExternalContext.getRequest, uri, URLRewriter.REWRITE_MODE_ABSOLUTE))
 
         val persistenceHeaders =
             for ((name, value) ← headers)
             yield capitalizeCommonOrSplitHeader(name) → List(value)
 
+        // Forwards all incoming headers, with exceptions like connection headers and, importantly, cookie headers
         val proxiedHeaders =
             proxyAndCapitalizeHeaders(request.getHeaderValuesMap.asScala mapValues (_.toList), request = true)
+
+        implicit val logger = new IndentedLogger(ProcessorImpl.logger, "")
+
+        val allHeaders =
+            Connection.buildConnectionHeadersLowerIfNeeded(
+                scheme           = outgoingURL.getScheme,
+                hasCredentials   = false,
+                customHeaders    = persistenceHeaders ++ proxiedHeaders,
+                headersToForward = Set(),                                  // handled by proxyAndCapitalizeHeaders()
+                cookiesToForward = Connection.cookiesToForwardFromProperty // NOT handled by proxyAndCapitalizeHeaders()
+            )
 
         val method = request.getMethod
 
@@ -126,13 +145,12 @@ class FormRunnerPersistenceProxy extends ProcessorImpl {
 
         Connection(
             httpMethodUpper = method,
-            url             = new URI(outgoingURL),
+            url             = outgoingURL,
             credentials     = None,
             content         = requestContent,
-            headers         = persistenceHeaders ++ proxiedHeaders,
+            headers         = allHeaders,
             loadState       = true,
-            logBody         = false)(
-            logger          = new IndentedLogger(ProcessorImpl.logger, "")
+            logBody         = false
         ).connect(
             saveState = true
         )
@@ -142,7 +160,13 @@ class FormRunnerPersistenceProxy extends ProcessorImpl {
      * Proxies the request to every configured persistence layer to get the list of the forms, and aggregates the
      * results. So the response is not simply proxied, unlike for other persistence layer calls.
      */
-    private def proxyPublishedFormsMetadata(request: Request, response: Response, app: Option[String], form: Option[String], path: String): Unit = {
+    private def proxyPublishedFormsMetadata(
+        request  : Request,
+        response : Response,
+        app      : Option[String],
+        form     : Option[String],
+        path     : String
+    ): Unit = {
         val propertySet = Properties.instance.getPropertySet
 
         val providers = {

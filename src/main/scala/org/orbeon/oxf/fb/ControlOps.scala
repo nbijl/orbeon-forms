@@ -41,9 +41,9 @@ trait ControlOps extends SchemaOps with ResourcesOps {
 
     val FB = "http://orbeon.org/oxf/xml/form-builder"
 
-    private val MIPsToRewrite = AllMIPs - Type
-    private val RewrittenMIPs = MIPsToRewrite map (mip ⇒ mip.name → toQName(FB → ("fb:" + mip.name))) toMap
-    
+    private val MIPsToRewrite = AllMIPs - Type - Required
+    private val RewrittenMIPs = MIPsToRewrite map (mip ⇒ mip → toQName(FB → ("fb:" + mip.name))) toMap
+
     val BindElementTest: Test = XF → "bind"
 
     private val topLevelBindTemplate: NodeInfo =
@@ -361,10 +361,10 @@ trait ControlOps extends SchemaOps with ResourcesOps {
 
     // Update a mip for the given control, grid or section id
     // The bind is created if needed
-    def updateMip(inDoc: NodeInfo, controlName: String, mipName: String, mipValue: String): Unit = {
+    def updateMipAsAttributeOnly(inDoc: NodeInfo, controlName: String, mipName: String, mipValue: String): Unit = {
 
         require(Model.AllMIPNames(mipName))
-        val mipQName = mipNameToFBMIPQname(mipName)
+        val (mipAttQName, _) = mipToFBMIPQNames(AllMIPsByName(mipName))
 
         findControlByName(inDoc, controlName) foreach { control ⇒
 
@@ -386,9 +386,9 @@ trait ControlOps extends SchemaOps with ResourcesOps {
 
             nonEmptyOrNone(mipValue) match {
                 case Some(normalizedMipValue) if ! mustRemoveAttribute(normalizedMipValue) ⇒
-                    ensureAttribute(bind, mipQName, normalizedMipValue)
+                    ensureAttribute(bind, mipAttQName, normalizedMipValue)
                 case _ ⇒
-                    delete(bind /@ mipQName)
+                    delete(bind /@ mipAttQName)
             }
         }
     }
@@ -424,21 +424,23 @@ trait ControlOps extends SchemaOps with ResourcesOps {
     }
 
     // Get the value of a MIP attribute if present
-    def getMip(inDoc: NodeInfo, controlName: String, mipName: String) = {
+    def readMipAsAttributeOnly(inDoc: NodeInfo, controlName: String, mipName: String) = {
         require(Model.AllMIPNames(mipName))
-        val mipQName = mipNameToFBMIPQname(mipName)
+        val (mipAttQName, _) = mipToFBMIPQNames(AllMIPsByName(mipName))
 
-        findBindByName(inDoc, controlName) flatMap (_ attValueOpt mipQName)
+        findBindByName(inDoc, controlName) flatMap (_ attValueOpt mipAttQName)
     }
 
-    def mipNameToFBMIPQname(mipName: String) =
-        RewrittenMIPs.get(mipName)                 orElse
-        (AllMIPsByName.get(mipName) map (_.aName)) getOrElse
-        (throw new IllegalArgumentException)
-
     // XForms callers: find the value of a MIP or null (the empty sequence)
-    def getMipOrEmpty(inDoc: NodeInfo, controlName: String, mipName: String) =
-        getMip(inDoc, controlName, mipName).orNull
+    def readMipAsAttributeOnlyOrEmpty(inDoc: NodeInfo, controlName: String, mipName: String) =
+        readMipAsAttributeOnly(inDoc, controlName, mipName).orNull
+
+    // Return (attQName, elemQName)
+    def mipToFBMIPQNames(mip: MIP) =
+        RewrittenMIPs.get(mip) match {
+            case Some(qn) ⇒ qn        → qn
+            case None     ⇒ mip.aName → mip.eName
+        }
 
     // Get all control names by inspecting all elements with an id that converts to a valid name
     def getAllControlNames(inDoc: NodeInfo) =
@@ -495,7 +497,7 @@ trait ControlOps extends SchemaOps with ResourcesOps {
 
     // Find a control's LHHA (there can be more than one for alerts)
     def getControlLHHA(inDoc: NodeInfo, controlName: String, lhha: String) =
-        findControlByName(inDoc, controlName).toList child (XF → lhha)
+        findControlByName(inDoc, controlName).toList child ((if (lhha=="text") FR else XF) → lhha)
 
     // Set the control help and add/remove help element and placeholders as needed
     def setControlHelp(controlName: String,  value: String) = {
@@ -581,7 +583,7 @@ trait ControlOps extends SchemaOps with ResourcesOps {
         val control = findControlByName(inDoc, controlName).get
 
         val removedHolders = delete(lhhaHoldersForAllLangsUseDoc(inDoc, controlName, lhha))
-        val removedLHHA    = delete(control child (XF → lhha))
+        val removedLHHA    = delete(control child ((if (lhha=="text") FR else XF) → lhha))
 
         removedHolders ++ removedLHHA
     }
@@ -623,7 +625,7 @@ trait ControlOps extends SchemaOps with ResourcesOps {
     def findBlankLHHAHoldersAndElements(inDoc: NodeInfo, lhha: String) = {
 
         val allHelpElements =
-            inDoc.root \\ (XF → lhha) map
+            inDoc.root \\ ((if (lhha=="text") FR else XF) → lhha) map
             (lhhaElement ⇒ lhhaElement → lhhaElement.attValue("ref")) collect
             { case (lhhaElement, HelpRefMatcher(controlName)) ⇒ lhhaElement → controlName }
 

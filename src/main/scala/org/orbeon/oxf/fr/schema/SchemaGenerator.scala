@@ -97,23 +97,32 @@ object SchemaGenerator {
             def unapply(bind: NodeInfo): Option[BindInfo] = {
                 val repeatGridNode = findControlNodeForBind(bind, "*:grid") filter FormRunner.isRepeat toList
 
-                // Also support nested xf:validation elements
-                val bindAndValidations = bind +: (bind / XFORMS_VALIDATION_QNAME)
+                // NOTE: Don't support deprecated xf:validation elements, as they were not in a release. But support
+                // xf:relevant, xf:required, and xf:type.
+
+                val hasRelevant =
+                    bind ++ (bind / XFORMS_RELEVANT_QNAME) /@ "has-relevant" nonEmpty
 
                 val maybeRequired =
-                    bindAndValidations map (_ /@ "required") exists (_.stringValue != "false()")
+                    (bind /@ REQUIRED_QNAME) ++ (bind / XFORMS_REQUIRED_QNAME /@ VALUE_QNAME) exists (_.stringValue != "false()")
+
+                def typeFromBind =
+                    (bind /@ TYPE_QNAME headOption) map (_.stringValue)
+
+                def typeFromChildElem =
+                    (bind / XFORMS_TYPE_QNAME headOption) map (_.stringValue)
 
                 val elemType = (
-                    (bindAndValidations /@ "type" headOption)
-                    map (_.stringValue)
-                    map bind.resolveQName
+                    typeFromBind
+                    orElse    typeFromChildElem
+                    map       bind.resolveQName
                     filterNot Set(XS_STRING_QNAME, XFORMS_STRING_QNAME)
                 )
 
                 Some(BindInfo(
                     elemName      = bind /@ ("ref" || "nodeset"),
                     maybeRequired = maybeRequired,
-                    hasRelevant   = bindAndValidations /@ "has-relevant" nonEmpty,
+                    hasRelevant   = hasRelevant,
                     elemType      = elemType,
                     repeated      = repeatGridNode nonEmpty,
                     min           = repeatGridNode /@ "min",
@@ -294,7 +303,7 @@ object SchemaGenerator {
 
                     // Find top-level xf:bind, which is the one without a `ref`
                     // (there is a xf:bind making instance('fr-form-instance') readonly in certain cases; is it really needed?)
-                    val componentTopLevelBind = xblBindingEl \ "*:implementation" \ "*:model" \ "*:bind" filter (_.att("ref").isEmpty)
+                    val componentTopLevelBind = xblBindingEl \ "*:implementation" \ "*:model" \ "*:bind" filter (_.attValue("id") == "fr-form-binds")
                     assert(componentTopLevelBind.length == 1, "expect exactly one top-level bind in component")
 
                     // Find xf:bind for the nodes inside this component

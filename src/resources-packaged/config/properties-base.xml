@@ -40,9 +40,6 @@
     <property as="xs:string"  name="oxf.url-rewriting.app-prefix"                    value="/apps"/>
 
     <property as="xs:anyURI"  name="oxf.url-rewriting.service.base-uri"              value=""/>
-    <!-- Support "servlet" or "wsrp" (or "portlet2" for backward compatibility") -->
-    <property as="xs:string"  name="oxf.url-rewriting.strategy.servlet"              value="servlet"/>
-    <!--<property as="xs:string"  name="oxf.url-rewriting.portlet.context"               value=""/>-->
     <property as="xs:string"  name="oxf.url-rewriting.wsrp.context"                  value=""/>
     <property as="xs:boolean" name="oxf.url-rewriting.wsrp.encode-resources"         value="false"/>
 
@@ -50,7 +47,10 @@
     <property as="xs:string"  name="oxf.http.internal-paths"                         value="(?!/exist/)/.*(?&lt;!\.jsp)"/>
     <property as="xs:string"  name="oxf.http.state"                                  value="session"/>
     <property as="xs:string"  name="oxf.http.forward-headers"                        value="Orbeon-Client"/>
+    <property as="xs:string"  name="oxf.http.forward-headers.private"                value="Orbeon-Client"/>
+    <property as="xs:string"  name="oxf.xforms.forward-submission-headers"           value=""/>
     <property as="xs:string"  name="oxf.http.forward-cookies"                        value=""/>
+    <property as="xs:string"  name="oxf.http.forward-cookies.private"                value=""/>
     <property as="xs:boolean" name="oxf.http.stale-checking-enabled"                 value="true"/>
     <property as="xs:integer" name="oxf.http.so-timeout"                             value="0"/>
     <property as="xs:boolean" name="oxf.http.chunk-requests"                         value="false"/>
