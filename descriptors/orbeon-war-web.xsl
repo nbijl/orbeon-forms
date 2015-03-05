@@ -494,7 +494,7 @@
 
             <session-config>
                 <!-- 1 * 60 = 1 hour -->
-                <session-timeout>60</session-timeout>
+                <session-timeout>10</session-timeout>
             </session-config>
 
         </web-app>
