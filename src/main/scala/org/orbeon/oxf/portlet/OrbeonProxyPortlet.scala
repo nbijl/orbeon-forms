@@ -58,7 +58,7 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
     private var settingsOpt: Option[PortletSettings] = None
 
     override def init(config: PortletConfig) {
-        APISupport.Logger.info("initializing Form Runner proxy portlet with WORTH modifications")
+        APISupport.Logger.info("initializing Form Runner proxy portlet with WORTH modifications version April 2016")
         super.init(config)
         settingsOpt = Some(
             PortletSettings(
@@ -551,10 +551,17 @@ class OrbeonProxyPortlet extends GenericPortlet with ProxyPortletEdit with Buffe
 
         if(application != null && competition.isDefined){
             if(competition.get.isPhasesEnabled) {
-                val workflowInstance = WorkflowInstanceManagerUtil.getWorkflowInstance(application.getCompanyId, wfTask.getWorkflowInstanceId)
-                val serviceContext = workflowInstance.getWorkflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT).asInstanceOf[ServiceContext]
-                formConfigurationId = serviceContext.getAttribute("formConfigurationId").toString.toLong
-                wfFormDefinition = Option(WorkflowFormDefinitionLocalServiceUtil.getFormDefinitionOverridingMainFlowByFormConfig(formConfigurationId, application.getStatus()))
+				if (wfTask == null) { // no workflow, get the formConfigurationId via the application
+					APISupport.Logger.debug("No Workflow Task")
+					formConfigurationId = FormConfigurationLocalServiceUtil.getApplicationFormConfigurations(application.getApplicationId()).get(0).getFormConfigurationId()
+		        	APISupport.Logger.debug("FormInstanceId = " + formConfigurationId)
+                    wfFormDefinition = Option(WorkflowFormDefinitionLocalServiceUtil.getFormDefinitionOverridingMainFlowByFormConfig(formConfigurationId, application.getStatus()))
+				} else {
+                    val workflowInstance = WorkflowInstanceManagerUtil.getWorkflowInstance(application.getCompanyId, wfTask.getWorkflowInstanceId)
+                    val serviceContext = workflowInstance.getWorkflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT).asInstanceOf[ServiceContext]
+                    formConfigurationId = serviceContext.getAttribute("formConfigurationId").toString.toLong
+                    wfFormDefinition = Option(WorkflowFormDefinitionLocalServiceUtil.getFormDefinitionOverridingMainFlowByFormConfig(formConfigurationId, application.getStatus()))
+				}
             } else {
                 wfFormDefinition = Option(WorkflowFormDefinitionLocalServiceUtil.getFormDefinitionOverridingMainFlow(competition.get.getCompetitionId(), application.getStatus()))
             }
